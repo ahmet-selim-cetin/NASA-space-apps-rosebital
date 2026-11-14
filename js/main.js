@@ -28,13 +28,9 @@ globe.load().then(() => {
   start.disabled = false;
   start.classList.add('ready');
   $('start-moon').disabled = false;
-  // Deep link: index.html#opportunity skips the intro and opens that rover; #moon opens the Moon
-  const linked = ROVERS.find((r) => r.id === location.hash.slice(1));
-  const moonLink = location.hash === '#moon' || linked?.world === 'moon';
-  if (location.hash === '#mars' || location.hash === '#drive' || moonLink || linked) enter();
-  const ready = moonLink ? setWorld('moon') : Promise.resolve();
-  ready.then(() => { if (linked) openRover(linked); });
-  if (location.hash === '#drive') startDrive();
+  // The start menu (Mars / Moon) always comes first. Clear any #… from the address so the
+  // browser does not remember and reopen an old link.
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 }).catch((err) => {
   console.error(err);
   $('start').querySelector('.loader-text').textContent = 'Model failed to load — run: python server.py';

@@ -1,9 +1,9 @@
 // English / Türkçe strings. Elements with data-i18n="key" are translated automatically.
 const STRINGS = {
   en: {
-    'title.top': 'Abandoned',
-    'title.bottom': 'but not Forgotten',
-    'intro.lead': 'They were built to last 90 days. They kept going for years. This is the story of the machines we left on Mars.',
+    'title.top': 'The Last',
+    'title.bottom': 'Signal',
+    'intro.lead': 'They finished their missions and fell silent. But they are still there. This is the story of the machines we left on Mars and the Moon.',
     'intro.start': 'Explore Mars',
     'intro.moon': 'Explore the Moon',
     'world.mars': 'Mars',
@@ -63,9 +63,9 @@ const STRINGS = {
     'ingenuity.tagline': 'Planned for 5 flights, it flew 72 — then a broken blade grounded it forever.',
   },
   tr: {
-    'title.top': 'Terk Edildi',
-    'title.bottom': 'ama Unutulmadı',
-    'intro.lead': '90 gün dayanmaları için üretildiler. Yıllarca devam ettiler. Bu, Mars\'ta bıraktığımız makinelerin hikâyesi.',
+    'title.top': 'Son',
+    'title.bottom': 'Sinyal',
+    'intro.lead': 'Görevlerini tamamladılar ve sustular. Ama hâlâ oradalar. Bu, Mars\'ta ve Ay\'da bıraktığımız makinelerin hikâyesi.',
     'intro.start': 'Mars\'ı Keşfet',
     'intro.moon': 'Ay\'ı Keşfet',
     'world.mars': 'Mars',

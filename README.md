@@ -5,7 +5,7 @@ Rosebital is the technology team of Gulizar Zeki Obdan Anadolu Lisesi in Istanbu
 
 ---
 
-## Abandoned but not Forgotten / Terk Edildi ama Unutulmadı
+## The Last Signal / Son Sinyal
 
 **EN** — An interactive, bilingual (English / Türkçe) story about the robots we left on Mars, made for readers aged 7–12.
 Spin a 3D globe of Mars built from a real NASA map, click a glowing beacon, and meet the rover that lies there:
