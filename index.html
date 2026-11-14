@@ -7,7 +7,7 @@
   <meta name="description" content="An interactive memorial to the rovers we left on Mars — Team Rosebital, NASA Space Apps Challenge." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script type="importmap">
     {
@@ -24,15 +24,19 @@
   <!-- First-person drive -->
   <div id="drive" class="drive"></div>
   <div id="drive-ui" class="drive-ui">
+    <div id="fx-dust" class="fx fx-dust"></div>
+    <canvas id="fx-noise" class="fx fx-noise" width="192" height="108"></canvas>
+    <div id="fx-black" class="fx-black"></div>
     <div class="hud hud-top">
       <p class="hud-title">MER-B · OPPORTUNITY</p>
       <p class="hud-sub"><span data-i18n="drive.location"></span> · SOL <span id="h-sol">5100</span></p>
     </div>
     <div class="drive-actions">
+      <button class="btn btn-hud" id="d-sound" aria-label="Sound"><span id="d-sound-icon">🔊</span></button>
       <button class="btn btn-hud" id="d-view"><span data-i18n="drive.view"></span> <kbd>C</kbd></button>
       <button class="btn btn-hud" id="d-exit"><span data-i18n="panel.back"></span></button>
     </div>
-    <div class="hud hud-telemetry">
+    <div class="hud hud-telemetry" id="h-telemetry">
       <div class="gauge wide">
         <span class="g-label" data-i18n="drive.battery"></span>
         <span class="g-value"><b id="h-battery">100</b> %</span>
@@ -43,12 +47,13 @@
         <span class="g-value"><b id="h-speed">0.0</b> cm/s</span>
         <span class="g-bar"><i id="h-speed-bar"></i></span>
       </div>
-      <div class="gauge"><span class="g-label" data-i18n="drive.solar"></span><span class="g-value"><b id="h-solar">645</b> Wh</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.solar"></span><span class="g-value"><b id="h-solar">100</b> %</span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.tau"></span><span class="g-value">τ <b id="h-tau">0.6</b></span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.temp"></span><span class="g-value"><b id="h-temp">-28</b> °C</span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="h-heading">000° N</b></span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.trip"></span><span class="g-value"><b id="h-trip">0.0</b> m</span></div>
     </div>
+    <ol id="d-log" class="hud drive-log"></ol>
     <p class="drive-help hidden" id="drive-help" data-i18n="drive.help"></p>
     <div class="touch-pad" aria-hidden="true">
       <button data-axis="turn" data-v="1">◀</button>
@@ -59,6 +64,24 @@
       <button data-axis="turn" data-v="-1">▶</button>
     </div>
   </div>
+  <!-- Ending -->
+  <section id="ending" class="ending" aria-hidden="true">
+    <div class="ending-inner">
+      <p class="eyebrow" data-i18n="end.kicker"></p>
+      <h2 data-i18n="end.title"></h2>
+      <p class="ending-body" data-i18n="end.body"></p>
+      <dl class="ending-stats">
+        <div><dt data-i18n="panel.planned"></dt><dd>90 <span data-i18n="panel.sols"></span></dd></div>
+        <div><dt data-i18n="panel.lasted"></dt><dd><span data-i18n="end.sols"></span> <span data-i18n="panel.sols"></span></dd></div>
+        <div><dt data-i18n="panel.distance"></dt><dd><span data-i18n="end.km"></span> km</dd></div>
+      </dl>
+      <p class="ending-closing" data-i18n="end.closing"></p>
+      <div class="ending-actions">
+        <button class="btn btn-primary" id="e-back"><span data-i18n="panel.back"></span></button>
+        <button class="btn btn-ghost" id="e-again"><span data-i18n="end.again"></span></button>
+      </div>
+    </div>
+  </section>
   <div id="fade" class="fade"><p id="fade-text"></p></div>
 
   <!-- Top bar -->

@@ -1,24 +1,25 @@
 // Story timelines shown in the side panel. Each chapter: when · title · text.
 // `closing` is the last line, shown as a quote. Sources are listed in README.md.
+// Written for readers aged 7-12: short sentences, everyday words, same facts.
 export const STORIES = {
   opportunity: {
     en: {
       chapters: [
-        { when: 'January 2004', title: 'A hole in one', text: 'Wrapped in airbags, Opportunity bounced across Meridiani Planum and rolled to a stop inside a small crater. Within weeks it found tiny iron-rich spheres nicknamed "blueberries" — proof that water once soaked this ground.' },
-        { when: '2004 – 2011', title: 'Ninety days become years', text: 'The mission was planned for 90 Martian days. Opportunity kept driving from crater to crater — Endurance, Victoria — and then spent three years crossing the plains to reach the giant Endeavour Crater.' },
-        { when: 'March 2015', title: 'A marathon on Mars', text: 'After eleven years of driving at a few centimetres per second, Opportunity passed 42.195 km — the first marathon ever completed on another world.' },
-        { when: 'June 2018', title: 'The sky goes dark', text: 'A dust storm grew until it wrapped the whole planet. Over Perseverance Valley the Sun almost disappeared, and the solar panels could no longer charge the batteries. On June 10 Opportunity sent its last message and went to sleep.' },
-        { when: 'February 2019', title: 'One last song', text: 'For eight months engineers sent more than a thousand commands, hoping the wind would clean the panels. No answer came. On February 13, 2019 NASA declared the mission complete, after playing one final wake-up song: "I\'ll Be Seeing You."' },
+        { when: 'January 2004', title: 'A hole in one', text: 'Wrapped in airbags, Opportunity bounced across Mars and rolled to a stop inside a small crater. A few weeks later it found tiny round stones, nicknamed "blueberries". They are full of iron, and stones like these form in water. So this dry, dusty land was once wet.' },
+        { when: '2004 – 2011', title: 'Ninety days become years', text: 'The plan was to work for 90 Martian days. Opportunity just kept going. It drove from crater to crater — first Endurance, then Victoria. Then it spent three years crossing the plains to reach a giant crater called Endeavour.' },
+        { when: 'March 2015', title: 'A marathon on Mars', text: 'Opportunity moved only a few centimetres every second. But it never gave up. After eleven years of driving it passed 42.195 km — the first marathon ever finished on another world.' },
+        { when: 'June 2018', title: 'The sky goes dark', text: 'A dust storm grew and grew until it wrapped the whole planet. Over Perseverance Valley, day turned almost into night. Without sunlight, the solar panels could not charge the batteries. On June 10 Opportunity sent its last message and fell asleep.' },
+        { when: 'February 2019', title: 'One last song', text: 'For eight months engineers sent more than a thousand commands. They hoped the wind would blow the dust off the panels. No answer came. On February 13, 2019 NASA played one last wake-up song, "I\'ll Be Seeing You", and announced that the mission was complete.' },
       ],
       closing: 'Built for 90 days. Worked for more than 14 years.',
     },
     tr: {
       chapters: [
-        { when: 'Ocak 2004', title: 'Tek atışta isabet', text: 'Hava yastıklarına sarılı Opportunity, Meridiani Planum\'da sekerek ilerledi ve küçük bir kraterin içinde durdu. Birkaç hafta içinde "yaban mersini" lakaplı, demir açısından zengin minik küreler buldu: bu toprağın bir zamanlar suyla ıslandığının kanıtı.' },
-        { when: '2004 – 2011', title: 'Doksan gün yıllara dönüşüyor', text: 'Görev 90 Mars günü için planlanmıştı. Opportunity kraterden kratere ilerlemeyi sürdürdü — Endurance, Victoria — ve ardından dev Endeavour Krateri\'ne ulaşmak için düzlükleri üç yılda geçti.' },
-        { when: 'Mart 2015', title: 'Mars\'ta bir maraton', text: 'Saniyede birkaç santimetre hızla geçen on bir yılın sonunda Opportunity 42,195 km\'yi aştı: başka bir dünyada tamamlanan ilk maraton.' },
-        { when: 'Haziran 2018', title: 'Gökyüzü kararıyor', text: 'Bir toz fırtınası büyüyerek tüm gezegeni sardı. Perseverance Vadisi\'nin üzerinde Güneş neredeyse kayboldu ve güneş panelleri artık bataryaları şarj edemedi. 10 Haziran\'da Opportunity son mesajını gönderdi ve uykuya daldı.' },
-        { when: 'Şubat 2019', title: 'Son bir şarkı', text: 'Mühendisler sekiz ay boyunca, rüzgârın panelleri temizlemesini umarak binden fazla komut gönderdi. Yanıt gelmedi. 13 Şubat 2019\'da NASA, son bir uyandırma şarkısı çaldıktan sonra görevin tamamlandığını duyurdu: "I\'ll Be Seeing You."' },
+        { when: 'Ocak 2004', title: 'Tek atışta isabet', text: 'Hava yastıklarına sarılı Opportunity, Mars\'ın üzerinde sekti ve küçük bir kraterin içinde durdu. Birkaç hafta sonra minik, yuvarlak taşlar buldu. Onlara "yaban mersini" adı verildi. İçleri demir doludur ve böyle taşlar suyun içinde oluşur. Demek ki bu kuru, tozlu toprak bir zamanlar ıslaktı.' },
+        { when: '2004 – 2011', title: 'Doksan gün yıllara dönüşüyor', text: 'Plana göre 90 Mars günü çalışacaktı. Ama Opportunity durmadı. Kraterden kratere gitti: önce Endurance, sonra Victoria. Ardından üç yıl boyunca düzlükleri aşıp Endeavour adlı dev kratere ulaştı.' },
+        { when: 'Mart 2015', title: 'Mars\'ta bir maraton', text: 'Opportunity her saniyede yalnızca birkaç santimetre ilerliyordu. Ama hiç pes etmedi. On bir yıllık yolculuğun sonunda 42,195 km\'yi geçti: başka bir dünyada tamamlanan ilk maraton.' },
+        { when: 'Haziran 2018', title: 'Gökyüzü kararıyor', text: 'Bir toz fırtınası büyüdü, büyüdü ve bütün gezegeni sardı. Perseverance Vadisi\'nde gündüz neredeyse geceye döndü. Güneş ışığı olmayınca paneller bataryaları dolduramadı. 10 Haziran\'da Opportunity son mesajını gönderdi ve uykuya daldı.' },
+        { when: 'Şubat 2019', title: 'Son bir şarkı', text: 'Mühendisler sekiz ay boyunca binden fazla komut gönderdi. Rüzgârın panellerdeki tozu süpürmesini umdular. Yanıt gelmedi. 13 Şubat 2019\'da NASA son bir uyandırma şarkısı çaldı, "I\'ll Be Seeing You", ve görevin tamamlandığını duyurdu.' },
       ],
       closing: '90 gün için üretildi. 14 yıldan uzun süre çalıştı.',
     },
@@ -27,21 +28,21 @@ export const STORIES = {
   spirit: {
     en: {
       chapters: [
-        { when: 'January 2004', title: 'First of the twins', text: 'Spirit landed in Gusev Crater three weeks before its twin, Opportunity. Like its sibling, it was expected to work for 90 Martian days.' },
-        { when: '2005', title: 'The mountaineer', text: 'Spirit spent more than a year climbing to the summit of Husband Hill. Passing whirlwinds blew the dust off its solar panels and gave it new life.' },
-        { when: '2006 – 2007', title: 'A broken wheel finds treasure', text: 'The right front wheel stopped turning, so Spirit drove backwards, dragging it. The stuck wheel scraped a trench and uncovered bright, nearly pure silica: a sign of ancient hot springs.' },
-        { when: 'May 2009', title: 'Trapped at Troy', text: 'Spirit broke through a thin crust into soft sand. For months engineers tried to drive it out using a test rover in a sandbox on Earth. In January 2010 NASA accepted that Spirit would never move again.' },
-        { when: 'March 2010', title: 'The last winter', text: 'Stuck in place, Spirit could not tilt its panels toward the low winter Sun. Its power faded in the cold, and on March 22, 2010 it fell silent. NASA ended recovery efforts on May 25, 2011.' },
+        { when: 'January 2004', title: 'First of the twins', text: 'Spirit landed in Gusev Crater three weeks before its twin, Opportunity. Like its twin, it was built to work for 90 Martian days.' },
+        { when: '2005', title: 'The mountaineer', text: 'Spirit spent more than a year climbing to the top of Husband Hill. On the way, whirlwinds swept the dust off its solar panels and gave it fresh energy.' },
+        { when: '2006 – 2007', title: 'A broken wheel finds treasure', text: 'Spirit\'s right front wheel stopped turning. So Spirit drove backwards, dragging the stuck wheel behind it. The wheel dug a little trench and uncovered bright white soil called silica. It was a strong sign that this part of Mars was once much wetter.' },
+        { when: 'Spring 2009', title: 'Trapped at Troy', text: 'Spirit broke through a thin crust and sank into soft sand. For months engineers tried to free it. They practised every move first with test rovers in a sandbox on Earth. In January 2010 NASA accepted that Spirit would never drive again.' },
+        { when: 'March 2010', title: 'The last winter', text: 'Stuck in place, Spirit could not tilt its panels toward the low winter Sun. Its power faded in the cold. On March 22, 2010 it fell silent. NASA kept trying to reach it until May 25, 2011.' },
       ],
       closing: 'Even standing still, it kept doing science until the end.',
     },
     tr: {
       chapters: [
-        { when: 'Ocak 2004', title: 'İkizlerin ilki', text: 'Spirit, ikizi Opportunity\'den üç hafta önce Gusev Krateri\'ne indi. Kardeşi gibi onun da 90 Mars günü çalışması bekleniyordu.' },
-        { when: '2005', title: 'Dağcı', text: 'Spirit, bir yıldan uzun süren bir tırmanışla Husband Tepesi\'nin zirvesine ulaştı. Yanından geçen hortumlar güneş panellerindeki tozu süpürdü ve ona yeni bir hayat verdi.' },
-        { when: '2006 – 2007', title: 'Kırık tekerlek hazine buluyor', text: 'Sağ ön tekerlek dönmeyi bıraktı; Spirit de onu sürükleyerek geri geri ilerledi. Kilitlenen tekerlek toprakta bir hendek açtı ve parlak, neredeyse saf silika ortaya çıktı: eski sıcak su kaynaklarının işareti.' },
-        { when: 'Mayıs 2009', title: 'Troy\'da mahsur', text: 'Spirit ince bir kabuğu kırıp yumuşak kuma gömüldü. Mühendisler aylarca, Dünya\'daki bir kum havuzunda test aracıyla onu kurtarmanın yolunu aradı. Ocak 2010\'da NASA, Spirit\'in bir daha hareket edemeyeceğini kabul etti.' },
-        { when: 'Mart 2010', title: 'Son kış', text: 'Yerinden kıpırdayamayan Spirit, panellerini alçalan kış Güneşi\'ne çeviremedi. Soğukta gücü tükendi ve 22 Mart 2010\'da sustu. NASA kurtarma çabalarını 25 Mayıs 2011\'de sonlandırdı.' },
+        { when: 'Ocak 2004', title: 'İkizlerin ilki', text: 'Spirit, ikizi Opportunity\'den üç hafta önce Gusev Krateri\'ne indi. İkizi gibi o da 90 Mars günü çalışmak için üretilmişti.' },
+        { when: '2005', title: 'Dağcı', text: 'Spirit bir yıldan uzun süre tırmanarak Husband Tepesi\'nin zirvesine çıktı. Yolda hortumlar güneş panellerindeki tozu süpürdü ve ona taze enerji verdi.' },
+        { when: '2006 – 2007', title: 'Kırık tekerlek hazine buluyor', text: 'Spirit\'in sağ ön tekerleği dönmeyi bıraktı. O da geri geri gitti ve bozuk tekerleği arkasından sürükledi. Tekerlek toprakta küçük bir hendek açtı ve silika denen parlak, beyaz bir toprağı ortaya çıkardı. Bu, Mars\'ın bu bölgesinin bir zamanlar çok daha ıslak olduğunun güçlü bir işaretiydi.' },
+        { when: '2009 ilkbaharı', title: 'Troy\'da mahsur', text: 'Spirit ince bir kabuğu kırdı ve yumuşak kuma gömüldü. Mühendisler aylarca onu kurtarmaya çalıştı. Her hareketi önce Dünya\'daki bir kum havuzunda test araçlarıyla denediler. Ocak 2010\'da NASA, Spirit\'in bir daha yol alamayacağını kabul etti.' },
+        { when: 'Mart 2010', title: 'Son kış', text: 'Yerinden kıpırdayamayan Spirit, panellerini alçaktaki kış Güneşi\'ne çeviremedi. Soğukta gücü yavaş yavaş tükendi. 22 Mart 2010\'da sustu. NASA ona ulaşmayı 25 Mayıs 2011\'e kadar denedi.' },
       ],
       closing: 'Yerinde dururken bile sonuna kadar bilim yapmayı sürdürdü.',
     },
@@ -50,40 +51,40 @@ export const STORIES = {
   sojourner: {
     en: {
       chapters: [
-        { when: 'July 4, 1997', title: 'Bouncing onto Mars', text: 'Mars Pathfinder hit the surface inside a cluster of airbags, bounced, and rolled to rest in Ares Vallis, an ancient flood plain. Inside was a rover about the size of a microwave oven.' },
-        { when: 'July 1997', title: 'The first wheels on another planet', text: 'Sojourner rolled down its ramp and became the first rover ever to drive on Mars. It weighed about 10.6 kg and moved roughly a centimetre every second.' },
-        { when: 'Summer 1997', title: 'Sniffing the rocks', text: 'Sojourner pressed its instrument against rocks the team named Barnacle Bill and Yogi to learn what they were made of. It was designed to last 7 Martian days. It worked for 83.' },
-        { when: 'September 27, 1997', title: 'The voice goes quiet', text: 'Sojourner could only talk to Earth through the Pathfinder lander. When the lander\'s battery wore out and its electronics grew too cold, the link was lost. The little rover itself was probably still working — waiting for instructions that never came.' },
+        { when: 'July 4, 1997', title: 'Bouncing onto Mars', text: 'Mars Pathfinder hit the ground wrapped in airbags, bounced, and rolled to a stop in Ares Vallis, a plain shaped by floods long ago. Inside was a rover the size of a microwave oven, just 30 centimetres tall.' },
+        { when: 'July 1997', title: 'The first wheels on another planet', text: 'Sojourner rolled down its ramp and became the first wheeled vehicle ever to drive on another planet. It weighed 10.6 kg. Its top speed was about one centimetre per second.' },
+        { when: 'Summer 1997', title: 'Sniffing the rocks', text: 'Sojourner pressed its instrument against rocks to find out what they were made of. The team gave the rocks funny names, like Barnacle Bill and Yogi. Sojourner was expected to last one week. It worked for 83 days — twelve times longer.' },
+        { when: 'September 27, 1997', title: 'The voice goes quiet', text: 'Sojourner could only talk to Earth through the Pathfinder lander. On September 27 the lander sent its last data. Nobody knows exactly why, but engineers think its battery wore out and it grew too cold. The little rover probably switched to its backup plan: circling the lander, or standing still, waiting for instructions.' },
       ],
-      closing: 'It never broke. It simply lost its way to call home.',
+      closing: 'It lost its voice home — but it opened the road for every rover that followed.',
     },
     tr: {
       chapters: [
-        { when: '4 Temmuz 1997', title: 'Mars\'a sekerek iniş', text: 'Mars Pathfinder, hava yastıklarının içinde yüzeye çarptı, sekti ve eski bir taşkın ovası olan Ares Vallis\'te durdu. İçinde mikrodalga fırın büyüklüğünde bir gezgin vardı.' },
-        { when: 'Temmuz 1997', title: 'Başka bir gezegendeki ilk tekerlekler', text: 'Sojourner rampasından indi ve Mars\'ta yol alan ilk gezgin oldu. Yaklaşık 10,6 kg ağırlığındaydı ve saniyede aşağı yukarı bir santimetre ilerliyordu.' },
-        { when: '1997 yazı', title: 'Kayaları koklamak', text: 'Sojourner, ekibin Barnacle Bill ve Yogi adını verdiği kayalara ölçüm aletini dayayıp neyden yapıldıklarını öğrendi. 7 Mars günü dayanması için tasarlanmıştı. 83 gün çalıştı.' },
-        { when: '27 Eylül 1997', title: 'Ses kesiliyor', text: 'Sojourner Dünya ile yalnızca Pathfinder iniş aracı üzerinden konuşabiliyordu. İniş aracının bataryası tükenip elektroniği fazla soğuyunca bağlantı koptu. Küçük gezginin kendisi büyük olasılıkla hâlâ çalışıyordu: hiç gelmeyen komutları bekliyordu.' },
+        { when: '4 Temmuz 1997', title: 'Mars\'a sekerek iniş', text: 'Mars Pathfinder hava yastıklarına sarılı halde yere çarptı, sekti ve Ares Vallis\'te durdu. Burası çok eski zamanlarda sellerin biçim verdiği bir ovadır. İçinde mikrodalga fırın büyüklüğünde, yalnızca 30 santimetre boyunda bir gezgin vardı.' },
+        { when: 'Temmuz 1997', title: 'Başka bir gezegendeki ilk tekerlekler', text: 'Sojourner rampasından indi ve başka bir gezegende yol alan ilk tekerlekli araç oldu. 10,6 kg ağırlığındaydı. En yüksek hızı saniyede yaklaşık bir santimetreydi.' },
+        { when: '1997 yazı', title: 'Kayaları koklamak', text: 'Sojourner ölçüm aletini kayalara dayadı ve neyden yapıldıklarını öğrendi. Ekip kayalara Barnacle Bill ve Yogi gibi eğlenceli adlar verdi. Sojourner\'ın bir hafta dayanması bekleniyordu. 83 gün çalıştı: on iki kat daha uzun.' },
+        { when: '27 Eylül 1997', title: 'Ses kesiliyor', text: 'Sojourner Dünya ile yalnızca Pathfinder iniş aracı üzerinden konuşabiliyordu. 27 Eylül\'de iniş aracı son verisini gönderdi. Nedenini kimse tam olarak bilmiyor, ama mühendisler bataryasının tükendiğini ve aracın fazla soğuduğunu düşünüyor. Küçük gezgin büyük olasılıkla yedek planına geçti: iniş aracının çevresinde dönmek ya da yerinde durup komut beklemek.' },
       ],
-      closing: 'Hiç bozulmadı. Yalnızca evi aramanın yolunu kaybetti.',
+      closing: 'Eve ulaşan sesini kaybetti, ama kendisinden sonraki bütün gezginlere yolu açtı.',
     },
   },
 
   ingenuity: {
     en: {
       chapters: [
-        { when: 'February 2021', title: 'A passenger under the rover', text: 'Ingenuity arrived in Jezero Crater folded under the belly of the Perseverance rover. It carried a small piece of fabric from the Wright brothers\' first aeroplane.' },
-        { when: 'April 19, 2021', title: 'First flight on another planet', text: 'In air a hundred times thinner than Earth\'s, Ingenuity rose 3 metres, hovered, and landed: 39 seconds that proved powered flight is possible on Mars.' },
-        { when: '2021 – 2023', title: 'From experiment to scout', text: 'It was meant to fly five times in 30 days. Instead it became Perseverance\'s scout, flying ahead to photograph the route — through dust storms, a frozen winter and a dead sensor.' },
-        { when: 'January 18, 2024', title: 'Flight 72', text: 'Over smooth, featureless sand, Ingenuity\'s navigation camera had almost nothing to track. It came down hard, and its rotor blades were damaged. It could still talk — but it would never fly again.' },
+        { when: 'February 2021', title: 'A passenger under the rover', text: 'Ingenuity, a small helicopter, arrived in Jezero Crater folded under the belly of the Perseverance rover. It carried a tiny piece of cloth from the Wright brothers\' first aeroplane.' },
+        { when: 'April 19, 2021', title: 'First flight on another planet', text: 'The air on Mars is a hundred times thinner than on Earth, so flying there is very hard. Ingenuity rose 3 metres, hovered, and landed. Those 39 seconds proved that flying on Mars is possible.' },
+        { when: '2021 – 2023', title: 'From experiment to scout', text: 'It was meant to fly five times in 30 days. Instead it became Perseverance\'s scout. It flew ahead to photograph the road — through dust storms, a freezing winter and a broken sensor.' },
+        { when: 'January 18, 2024', title: 'Flight 72', text: 'Ingenuity finds its way by watching the ground with a camera. But over smooth sand with nothing on it, the camera had almost nothing to follow. Ingenuity came down hard and its rotor blades were damaged. It could still talk — but it would never fly again.' },
       ],
       closing: 'Planned for 5 flights. It flew 72.',
     },
     tr: {
       chapters: [
-        { when: 'Şubat 2021', title: 'Gezginin altındaki yolcu', text: 'Ingenuity, Perseverance gezgininin karnının altında katlanmış halde Jezero Krateri\'ne ulaştı. Yanında Wright kardeşlerin ilk uçağından küçük bir kumaş parçası taşıyordu.' },
-        { when: '19 Nisan 2021', title: 'Başka bir gezegende ilk uçuş', text: 'Dünya\'dakinden yüz kat ince bir havada Ingenuity 3 metre yükseldi, havada asılı kaldı ve indi: Mars\'ta motorlu uçuşun mümkün olduğunu kanıtlayan 39 saniye.' },
-        { when: '2021 – 2023', title: 'Deneyden öncülüğe', text: '30 günde beş kez uçması planlanmıştı. Bunun yerine Perseverance\'ın öncüsü oldu: toz fırtınalarına, dondurucu bir kışa ve bozulan bir sensöre rağmen önden uçup rotayı fotoğrafladı.' },
-        { when: '18 Ocak 2024', title: '72. uçuş', text: 'Pürüzsüz, özelliksiz kumların üzerinde Ingenuity\'nin navigasyon kamerası takip edecek neredeyse hiçbir şey bulamadı. Sert bir iniş yaptı ve pervane kanatları hasar gördü. Hâlâ konuşabiliyordu, ama bir daha asla uçamayacaktı.' },
+        { when: 'Şubat 2021', title: 'Gezginin altındaki yolcu', text: 'Küçük bir helikopter olan Ingenuity, Perseverance gezgininin karnının altında katlanmış halde Jezero Krateri\'ne ulaştı. Yanında Wright kardeşlerin ilk uçağından minik bir kumaş parçası taşıyordu.' },
+        { when: '19 Nisan 2021', title: 'Başka bir gezegende ilk uçuş', text: 'Mars\'ın havası Dünya\'dakinden yüz kat incedir, bu yüzden orada uçmak çok zordur. Ingenuity 3 metre yükseldi, havada durdu ve indi. O 39 saniye, Mars\'ta uçmanın mümkün olduğunu kanıtladı.' },
+        { when: '2021 – 2023', title: 'Deneyden öncülüğe', text: '30 günde beş kez uçması planlanmıştı. Bunun yerine Perseverance\'ın öncüsü oldu. Toz fırtınalarına, dondurucu bir kışa ve bozulan bir sensöre rağmen önden uçup yolun fotoğraflarını çekti.' },
+        { when: '18 Ocak 2024', title: '72. uçuş', text: 'Ingenuity yolunu, bir kamerayla yere bakarak bulur. Ama üzerinde hiçbir şey olmayan dümdüz kumda kameranın takip edeceği neredeyse hiçbir şey yoktu. Ingenuity sert bir iniş yaptı ve pervane kanatları hasar gördü. Hâlâ konuşabiliyordu, ama bir daha asla uçamayacaktı.' },
       ],
       closing: '5 uçuş için planlandı. 72 kez uçtu.',
     },

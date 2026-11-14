@@ -29,6 +29,12 @@ Then open http://localhost:8000
   JPL news release, 25 Jan 2024: https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
   Flight log and positions: https://en.wikipedia.org/wiki/List_of_Ingenuity_flights
 
+### Story details (checked against)
+- Opportunity: hole-in-one landing and hematite "blueberries" — https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/science-highlights/ ; last contact on sol 5111 — JPL end-of-mission report https://dataverse.jpl.nasa.gov/dataset.xhtml?persistentId=hdl%3A2014%2F47103
+- Spirit: Husband Hill climb — https://science.nasa.gov/photojournal/looking-back-at-spirits-trail-to-the-summit/ ; stuck at "Troy" — https://www.jpl.nasa.gov/news/nasa-to-begin-attempts-to-free-sand-trapped-mars-rover/
+- Sojourner: NASA Facts sheet (coordinates, size, speed, rocks, end of mission) — https://mars.nasa.gov/internal_resources/815/ ; https://www.nasa.gov/history/25-years-ago-mars-pathfinder-launches-to-mars-to-deploy-sojourner-the-first-planetary-rover/
+- Ingenuity: first flight — https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/ ; Flight 72 investigation — https://www.jpl.nasa.gov/news/nasa-performs-first-aircraft-accident-investigation-on-another-world/
+
 ### 3D models
 - Opportunity / Spirit — NASA 3D Resources: https://science.nasa.gov/3d-resources/mars-exploration-rover-spirit-and-opportunity/
 - Ingenuity — NASA 3D Resources: https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/

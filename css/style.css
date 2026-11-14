@@ -5,9 +5,10 @@
   --line: rgba(255, 220, 190, 0.14);
   --glass: rgba(14, 9, 8, 0.72);
   --accent: #ff8a50;
-  --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans: 'Inter', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Friendly, rounded and easy to read for ages 7-12, without looking babyish. */
+  --serif: 'Nunito', system-ui, sans-serif; /* headings (used extra-bold) */
+  --sans: 'Nunito', system-ui, sans-serif; /* reading text */
+  --mono: 'Nunito', system-ui, sans-serif; /* labels and read-outs */
 }
 
 * { box-sizing: border-box; }
@@ -190,3 +191,113 @@ body.driving .topbar { z-index: 60; top: auto; bottom: 0; left: auto; }
 .timeline p { margin: 0; font-size: 14px; line-height: 1.6; color: #d8cbbf; }
 .story blockquote { margin: 6px 0 4px; padding: 16px 0 0; border-top: 1px solid var(--line); font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1.4; color: var(--ink); }
 .actions [hidden] { display: none; }
+
+/* ---------- Storm effects ---------- */
+.fx { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.fx-dust { background: radial-gradient(ellipse at 50% 45%, rgba(120, 70, 30, 0) 30%, rgba(70, 38, 14, 0.75) 100%), rgba(150, 95, 50, 0.16); }
+.fx-noise { image-rendering: pixelated; mix-blend-mode: screen; }
+.fx-black { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: #000; }
+#h-telemetry { transition: opacity .3s; }
+
+.drive-log { right: 24px; bottom: 64px; width: min(340px, calc(100% - 48px)); margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.drive-log li {
+  font-size: 11px; line-height: 1.45; letter-spacing: 0.03em; padding: 8px 12px; border-radius: 10px; border-left: 2px solid #ffb347;
+  background: rgba(24, 13, 8, 0.6); backdrop-filter: blur(6px); animation: log-in .6s ease both; opacity: 0.55;
+}
+.drive-log li:last-child { opacity: 1; }
+.drive-log li:nth-last-child(n+4) { display: none; }
+@keyframes log-in { from { transform: translateY(8px); opacity: 0; } }
+
+/* ---------- Ending ---------- */
+.ending {
+  position: fixed; inset: 0; z-index: 65; display: grid; place-items: center; padding: 24px; overflow-y: auto;
+  background: #000; opacity: 0; visibility: hidden; transition: opacity 3s ease, visibility 3s;
+}
+.ending.on { opacity: 1; visibility: visible; }
+.ending-inner { max-width: 620px; text-align: center; }
+.ending h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(38px, 7vw, 68px); line-height: 1; margin: 0 0 22px; }
+.ending-body { font-size: clamp(15px, 2vw, 17px); line-height: 1.7; color: #d8cbbf; margin: 0 0 30px; }
+.ending-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 0 0 32px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.ending-stats div { background: #0b0706; padding: 14px 10px; }
+.ending-stats dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.ending-stats dd { margin: 0; font-size: 18px; font-weight: 500; }
+.ending-closing { font-family: var(--serif); font-style: italic; font-size: clamp(24px, 4vw, 36px); color: var(--accent); margin: 0 0 34px; }
+.ending-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ending.on .ending-inner > * { animation: end-in 1.6s ease both; animation-delay: 2.5s; }
+.ending.on .ending-inner > :nth-child(2) { animation-delay: 3.3s; }
+.ending.on .ending-inner > :nth-child(3) { animation-delay: 4.6s; }
+.ending.on .ending-inner > :nth-child(4) { animation-delay: 6s; }
+.ending.on .ending-inner > :nth-child(5) { animation-delay: 7.6s; }
+.ending.on .ending-inner > :nth-child(6) { animation-delay: 9s; }
+@keyframes end-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (max-width: 860px) {
+  .drive-log { right: 12px; bottom: auto; top: 96px; width: min(260px, calc(100% - 24px)); }
+  .ending-stats { grid-template-columns: 1fr; }
+}
+
+/* ---------- Type for young readers (7-12): bigger, rounder, no italics, no tiny labels ---------- */
+body { font-size: 16px; }
+em, .tagline, .fade p, .story blockquote, .ending-closing { font-style: normal; }
+.brand { font-size: 19px; font-weight: 800; letter-spacing: 0; }
+.intro-inner { max-width: 800px; }
+.intro h1 { font-weight: 900; letter-spacing: -0.01em; font-size: clamp(34px, 7.2vw, 74px); line-height: 1.08; }
+.lead { font-size: clamp(17px, 2.3vw, 20px); line-height: 1.6; }
+.btn { font-size: 16px; font-weight: 700; }
+.eyebrow { font-size: 13px; font-weight: 800; letter-spacing: 0.1em; }
+.hint, .drive-help { font-size: 14px; font-weight: 600; letter-spacing: 0; }
+.lang-switch button { font-size: 13px; font-weight: 800; }
+
+.beacon-label b { font-size: 17px; font-weight: 800; }
+.beacon-label small { font-size: 12px; font-weight: 600; letter-spacing: 0; }
+
+.panel h2 { font-weight: 900; font-size: 42px; }
+.tagline { font-family: var(--sans); font-size: 18px; font-weight: 600; line-height: 1.5; }
+.stats dt, .ending-stats dt, .timeline time { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; }
+.stats dd { font-size: 17px; font-weight: 700; }
+.timeline h3 { font-weight: 800; font-size: 21px; }
+.timeline p { font-size: 16px; line-height: 1.65; }
+.story blockquote { font-size: 20px; font-weight: 800; }
+.credit { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+
+.hud { font-variant-numeric: tabular-nums; }
+.hud-title { font-size: 15px; font-weight: 800; letter-spacing: 0.12em; }
+.hud-sub { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; opacity: 0.9; }
+.btn-hud { font-size: 14px; font-weight: 700; }
+.g-label { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; opacity: 0.8; }
+.g-value { font-size: 14px; font-weight: 600; }
+.g-value b { font-size: 19px; font-weight: 800; }
+.drive-log li { font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 1.4; }
+.fade p { font-weight: 700; }
+
+.ending h2 { font-weight: 900; line-height: 1.1; }
+.ending-body { font-size: clamp(16px, 2.1vw, 19px); }
+.ending-stats dd { font-size: 20px; font-weight: 800; }
+.ending-closing { font-weight: 800; }
+
+@media (max-width: 860px) {
+  .brand { font-size: 16px; }
+  .panel h2 { font-size: 34px; }
+  .tagline { font-size: 17px; }
+  .hud-title { font-size: 13px; }
+  .hint { font-size: 13px; }
+}
+
+/* ---------- Storm messages: one clear banner, top centre ---------- */
+.drive-log {
+  top: 76px; bottom: auto; left: 50%; right: auto; transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px)); align-items: center;
+}
+.drive-log li {
+  font-size: 17px; font-weight: 800; line-height: 1.35; text-align: center; color: #fff4e4;
+  padding: 11px 20px; border-radius: 14px; border: 2px solid #ffb347; border-left-width: 2px;
+  background: rgba(20, 10, 5, 0.82); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  opacity: 1; animation: log-pop .7s ease both, log-glow 2.4s ease 0.7s both;
+}
+.drive-log li:not(:last-child) { display: none; }
+@keyframes log-pop { from { transform: translateY(-14px) scale(0.94); opacity: 0; } }
+@keyframes log-glow { from { box-shadow: 0 0 0 6px rgba(255, 179, 71, 0.45), 0 6px 24px rgba(0, 0, 0, 0.45); } }
+@media (max-width: 860px) {
+  .drive-log { top: 100px; width: calc(100% - 24px); }
+  .drive-log li { font-size: 15px; padding: 9px 14px; }
+}

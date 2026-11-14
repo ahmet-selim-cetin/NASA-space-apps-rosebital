@@ -11,6 +11,22 @@ const TRACK_SPACING = 0.22;
 const MAX_TRACKS = 5000;
 const CLIMB_LIMIT = 0.3; // rocks up to this size are driven over; bigger ones block the rover
 const ROCK_CELL = 4; // metres, spatial grid for rock lookups
+const DUST_COUNT = 2600;
+const DUST_BOX = 22; // metres, half-size of the blowing-dust volume around the camera
+
+// The storm, in seconds since the drive began. It always ends the same way: this is a memorial, not a challenge.
+// Real anchors: orbiter detection on sol 5100 (May 30, 2018), sky opacity (tau) 10.8 and last signal on sol 5111 (June 10, 2018).
+const STORM_LOG = [
+  { t: 12, key: 'log.detect' },
+  { t: 34, key: 'log.rising' },
+  { t: 52, key: 'log.panels' },
+  { t: 70, key: 'log.low' },
+  { t: 90, key: 'log.fault' },
+  { t: 103, key: 'log.last' },
+];
+const STORM_END = 112;
+const SOL_START = 5100, SOL_END = 5111;
+const ramp = (a, b, x) => THREE.MathUtils.smoothstep(x, a, b);
 
 // ---------- Terrain height field ----------
 function hash(x, y) {
@@ -101,7 +117,12 @@ export class DriveSim {
     this.view = 'first'; // 'first' | 'chase'
 
     // Rover state. `power` (0..1) scales speed; the storm sequence drives it down.
-    this.state = { x: 0, z: 0, heading: 0, speed: 0, trip: 0, power: 1, battery: 100, solar: 645, tau: 0.6, temp: -28 };
+    this.state = { x: 0, z: 0, heading: 0, speed: 0, trip: 0, power: 1, battery: 100, solar: 100, tau: 0.6, temp: -28, sol: SOL_START };
+    this.storm = { t: 0, next: 0, ended: false };
+    this.timeScale = 1; // >1 fast-forwards the storm (for testing)
+    this.onLog = null; // (i18nKey) => void
+    this.onEnd = null; // () => void, fired once when the rover has gone silent
+    this.onWind = null; // (level 0..1, master 0..1) => void
     this.lastTrack = new THREE.Vector2(0, 0);
     this.trackCount = 0;
     this.rockGrid = new Map(); // "cx,cz" -> [{ x, z, size }]
@@ -155,6 +176,7 @@ export class DriveSim {
     this.#buildTerrain();
     this.#buildRocks();
     this.#buildTracks();
+    this.#buildDust();
     await this.#loadRover(onProgress);
     this.#bindInput();
     this.resize();
@@ -163,6 +185,7 @@ export class DriveSim {
 
   start() {
     Object.assign(this.state, { x: 0, z: 0, heading: 0, speed: 0, trip: 0 });
+    this.storm = { t: 0, next: 0, ended: false };
     this.look.yaw = 0; this.look.pitch = 0;
     this.trackCount = 0;
     this.tracks.count = 0;
@@ -172,6 +195,7 @@ export class DriveSim {
     this.container.classList.add('active');
     this.resize();
     this.#placeRover(null);
+    this.#updateStorm(0);
   }
 
   stop() {
@@ -202,6 +226,8 @@ export class DriveSim {
     const k = this.keys;
     const fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0) + this.touch.fwd;
     const turn = (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0) - (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) + this.touch.turn;
+
+    this.#updateStorm(dt);
 
     // --- motion ---
     const target = THREE.MathUtils.clamp(fwd, -0.5, 1) * MAX_SPEED * s.power;
@@ -247,6 +273,7 @@ export class DriveSim {
     this.scene = new THREE.Scene();
     this.haze = new THREE.Color(0xc9a682);
     this.scene.fog = new THREE.FogExp2(this.haze, 0.0055);
+    this.haze = this.scene.fog.color; // FogExp2 copies the colour; keep a handle on the live one
     this.camera = new THREE.PerspectiveCamera(62, 1, 0.05, 1500);
     this._v1 = new THREE.Vector3();
     this._v2 = new THREE.Vector3();
@@ -261,6 +288,9 @@ export class DriveSim {
       zenith: { value: new THREE.Color(0x8f6f58) },
       sunDir: { value: this.sunDir },
       sunStrength: { value: 1 },
+      front: { value: 0 }, // 0..1 height of the approaching dust wall
+      stormDir: { value: new THREE.Vector2(-0.29, -0.96) }, // the storm comes from ahead (north)
+      stormCol: { value: new THREE.Color(0x5c3a22) },
     };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.skyUniforms,
@@ -272,6 +302,7 @@ export class DriveSim {
         void main() { vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: /* glsl */`
         uniform vec3 horizon; uniform vec3 zenith; uniform vec3 sunDir; uniform float sunStrength;
+        uniform float front; uniform vec2 stormDir; uniform vec3 stormCol;
         varying vec3 vDir;
         void main() {
           vec3 d = normalize(vDir);
@@ -280,7 +311,12 @@ export class DriveSim {
           float s = max(dot(d, sunDir), 0.0);
           // Martian sun: small disc with a cool, bluish forward-scatter glow
           col += sunStrength * (vec3(0.75, 0.82, 0.95) * pow(s, 24.0) * 0.45 + vec3(1.0, 0.97, 0.9) * smoothstep(0.9993, 0.9997, s) * 2.5);
-          col = mix(col, horizon, smoothstep(0.0, -0.08, d.y));
+          // dust wall: rises from the horizon, tallest in the direction the storm comes from
+          float toward = 0.5 + 0.5 * dot(normalize(d.xz + vec2(1e-5)), stormDir);
+          float top = front * 0.03 + front * front * 1.3 * toward * toward;
+          float wall = (1.0 - smoothstep(top * 0.3, top + 0.07, d.y)) * min(1.0, front * 4.0);
+          col = mix(col, stormCol, wall);
+          col = mix(col, horizon, 1.0 - smoothstep(-0.08, 0.0, d.y));
           gl_FragColor = vec4(col, 1.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
@@ -381,6 +417,7 @@ export class DriveSim {
     box = new THREE.Box3().setFromObject(model);
     model.position.y = -box.min.y;
     this.roverMaterials = [];
+    this.dustAmount = { value: 0 };
     model.traverse((o) => {
       if (!o.isMesh) return;
       o.castShadow = true;
@@ -391,6 +428,19 @@ export class DriveSim {
       o.material.metalnessMap = null;
       o.material.roughnessMap = null;
       this.roverMaterials.push(o.material);
+      // Dust settles on upward-facing surfaces as `uDust` rises.
+      o.material.onBeforeCompile = (shader) => {
+        shader.uniforms.uDust = this.dustAmount;
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', 'varying float vDustUp;\nvarying vec3 vDustPos;\n#include <common>')
+          .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nvDustUp = normalize(mat3(modelMatrix) * objectNormal).y;\nvDustPos = position;');
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', 'uniform float uDust;\nvarying float vDustUp;\nvarying vec3 vDustPos;\n#include <common>')
+          .replace('#include <map_fragment>', `#include <map_fragment>
+            float dustN = 0.5 + 0.25 * sin(vDustPos.x * 1.7 + vDustPos.y * 0.6) + 0.25 * sin(vDustPos.y * 2.3 - vDustPos.x * 0.9);
+            float dustA = clamp(uDust * 1.6 - 0.6 * dustN, 0.0, 1.0) * smoothstep(-0.2, 0.7, vDustUp);
+            diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.52, 0.31, 0.17), dustA * 0.96);`);
+      };
     });
 
     this.rover = new THREE.Group();
@@ -434,6 +484,112 @@ export class DriveSim {
     this.rover.position.set(s.x, this.roverY, s.z);
   }
 
+  #buildDust() {
+    const pos = new Float32Array(DUST_COUNT * 3);
+    for (let i = 0; i < DUST_COUNT; i++) {
+      pos[i * 3] = (Math.random() * 2 - 1) * DUST_BOX;
+      pos[i * 3 + 1] = Math.random() * 9;
+      pos[i * 3 + 2] = (Math.random() * 2 - 1) * DUST_BOX;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    // soft round grain instead of the default square point
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 32, 32);
+    this.dust = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xd9a878, map: new THREE.CanvasTexture(c), size: 0.06, sizeAttenuation: true, transparent: true, opacity: 0, depthWrite: false }));
+    this.dust.frustumCulled = false;
+    this.dust.visible = false;
+    this.scene.add(this.dust);
+    this.windLevel = 0;
+    this.hazeClear = new THREE.Color(0xc9a682);
+    this.hazeStorm = new THREE.Color(0x8c5a32);
+    this.hazeDark = new THREE.Color(0x120a05);
+    this.zenithClear = new THREE.Color(0x8f6f58);
+  }
+
+  // Drives everything the storm changes: sky, light, fog, blowing dust, dust on the panels, power and telemetry.
+  #updateStorm(dt) {
+    const st = this.storm, s = this.state;
+    st.t += dt * this.timeScale;
+    const t = st.t;
+
+    const front = ramp(14, 64, t); // the wall climbs the sky
+    const dusty = ramp(32, 80, t); // air fills with dust
+    const dark = ramp(54, 102, t); // daylight is lost
+    const off = ramp(94, 108, t); // systems shut down
+    this.windLevel = dusty;
+
+    // --- telemetry ---
+    s.tau = THREE.MathUtils.lerp(0.6, 10.8, ramp(26, 86, t));
+    s.solar = THREE.MathUtils.lerp(100, 3, ramp(30, 88, t));
+    s.battery = 100 * (1 - ramp(46, 104, t));
+    s.power = THREE.MathUtils.lerp(1, 0.2, ramp(50, 92, t)) * (1 - off);
+    s.sol = Math.min(SOL_END, SOL_START + Math.floor((SOL_END - SOL_START + 0.99) * ramp(8, 102, t)));
+
+    // --- sky, fog and light ---
+    this.haze.copy(this.hazeClear).lerp(this.hazeStorm, dusty).lerp(this.hazeDark, dark * 0.97);
+    this.scene.fog.density = 0.0055 + 0.028 * dusty + 0.05 * dark;
+    this.skyUniforms.horizon.value.copy(this.haze);
+    this.skyUniforms.zenith.value.copy(this.zenithClear).lerp(this.hazeStorm, dusty).lerp(this.hazeDark, dark * 0.97);
+    this.skyUniforms.stormCol.value.set(0x5c3a22).lerp(this.hazeDark, dark * 0.97);
+    this.skyUniforms.front.value = front;
+    this.skyUniforms.sunStrength.value = 1 - ramp(30, 72, t);
+    this.sun.intensity = 2.4 * (1 - dusty * 0.8) * (1 - dark * 0.97);
+    this.hemi.intensity = 1.15 * (1 - dark * 0.9);
+
+    // --- dust on the rover, dust in the air ---
+    this.dustAmount.value = ramp(40, 98, t);
+    this.dust.visible = dusty > 0.01;
+    this.dust.material.opacity = Math.min(1, dusty * 1.3) * (1 - dark * 0.7);
+    if (this.dust.visible && dt > 0) {
+      const cam = this.camera.position, p = this.dust.geometry.attributes.position, a = p.array;
+      const speed = 5 + 16 * dusty;
+      const wx = 0.29 * speed * dt, wz = 0.96 * speed * dt; // blowing out of the storm, toward the south
+      for (let i = 0; i < a.length; i += 3) {
+        a[i] += wx + (Math.random() - 0.5) * 0.05;
+        a[i + 1] += (Math.random() - 0.5) * 0.06;
+        a[i + 2] += wz;
+        if (a[i] - cam.x > DUST_BOX) a[i] -= 2 * DUST_BOX; else if (a[i] - cam.x < -DUST_BOX) a[i] += 2 * DUST_BOX;
+        if (a[i + 2] - cam.z > DUST_BOX) a[i + 2] -= 2 * DUST_BOX; else if (a[i + 2] - cam.z < -DUST_BOX) a[i + 2] += 2 * DUST_BOX;
+        const rel = a[i + 1] - cam.y;
+        if (rel > 5) a[i + 1] -= 9; else if (rel < -4) a[i + 1] += 9;
+      }
+      p.needsUpdate = true;
+    }
+
+    // --- screen effects: dusty lens, then a noisy, incomplete last image ---
+    const h = this.hud;
+    if (h?.fxDust) {
+      h.fxDust.style.opacity = (dusty * 0.75).toFixed(3);
+      h.fxNoise.style.opacity = (off * 0.24).toFixed(3);
+      if (off > 0.01) this.#drawNoise(h.fxNoise);
+      h.fxBlack.style.height = `${ramp(102, 110, t) * 100}%`;
+      h.telemetry.style.opacity = (1 - ramp(100, 108, t)).toFixed(3);
+    }
+
+    this.onWind?.(0.12 + 0.88 * dusty, 1 - ramp(100, 110, t));
+
+    while (st.next < STORM_LOG.length && t >= STORM_LOG[st.next].t) this.onLog?.(STORM_LOG[st.next++].key);
+    if (!st.ended && t >= STORM_END) { st.ended = true; this.onEnd?.(); }
+  }
+
+  #drawNoise(canvas) {
+    const ctx = canvas.getContext('2d');
+    const img = ctx.createImageData(canvas.width, canvas.height);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = Math.random() * 170;
+      d[i] = v; d[i + 1] = v * 0.9; d[i + 2] = v * 0.8; d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
   #dropTracks() {
     const s = this.state;
     if (Math.hypot(s.x - this.lastTrack.x, s.z - this.lastTrack.y) < TRACK_SPACING) return;
@@ -464,7 +620,8 @@ export class DriveSim {
       const bob = Math.sin(this.state.trip * 5.5) * 0.006 * Math.min(1, Math.abs(this.state.speed));
       this.mast.getWorldPosition(this.camera.position);
       this.camera.position.y += bob;
-      const e = new THREE.Euler(L.pitch - 0.2, L.yaw, 0, 'YXZ');
+      const shake = this.windLevel * 0.006;
+      const e = new THREE.Euler(L.pitch - 0.2 + (Math.random() - 0.5) * shake, L.yaw + (Math.random() - 0.5) * shake, 0, 'YXZ');
       this.camera.quaternion.copy(this.rover.quaternion).multiply(this._q.setFromEuler(e));
     } else {
       const yaw = this.state.heading + L.yaw;
@@ -489,6 +646,8 @@ export class DriveSim {
     h.trip.textContent = s.trip.toFixed(1);
     h.battery.textContent = Math.round(s.battery);
     h.batteryBar.style.width = `${s.battery}%`;
+    h.batteryBar.style.background = s.battery > 50 ? '#9be37a' : s.battery > 20 ? '#ffb347' : '#ff5a47';
+    h.sol.textContent = s.sol;
     h.solar.textContent = Math.round(s.solar);
     h.tau.textContent = s.tau.toFixed(1);
     h.temp.textContent = Math.round(s.temp);

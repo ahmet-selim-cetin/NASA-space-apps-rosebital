@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Globe } from './globe.js';
 import { DriveSim } from './drive.js';
+import { WindAudio } from './audio.js';
 import { ROVERS } from './data.js';
 import { STORIES } from './stories.js';
 import { t, getLang, setLang, onLangChange, applyI18n } from './i18n.js';
@@ -109,7 +110,29 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const drive = new DriveSim($('drive'), {
   speed: $('h-speed'), speedBar: $('h-speed-bar'), heading: $('h-heading'), trip: $('h-trip'),
   battery: $('h-battery'), batteryBar: $('h-battery-bar'), solar: $('h-solar'), tau: $('h-tau'), temp: $('h-temp'),
+  sol: $('h-sol'), telemetry: $('h-telemetry'), fxDust: $('fx-dust'), fxNoise: $('fx-noise'), fxBlack: $('fx-black'),
 });
+const wind = new WindAudio();
+const ending = $('ending');
+const fast = Number(new URLSearchParams(location.search).get('fast'));
+if (fast > 0) drive.timeScale = fast; // e.g. ?fast=6 to preview the storm quickly
+
+drive.onWind = (level, master) => wind.set(level, master);
+drive.onLog = (key) => {
+  const li = document.createElement('li');
+  li.dataset.i18n = key;
+  li.textContent = t(key);
+  $('d-log').append(li);
+};
+drive.onEnd = () => {
+  ending.classList.add('on');
+  ending.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('remembered');
+};
+function hideEnding() {
+  ending.classList.remove('on');
+  ending.setAttribute('aria-hidden', 'true');
+}
 let switching = false;
 
 async function fadeTo(text) {
@@ -122,8 +145,11 @@ async function startDrive() {
   if (switching || drive.running) return;
   switching = true;
   try {
+    wind.start(); // inside the click, so the browser allows sound
     await fadeTo(t('drive.loading'));
     await drive.load();
+    $('d-log').replaceChildren();
+    hideEnding();
     globe.setActive(false);
     document.body.classList.add('driving');
     drive.start();
@@ -148,6 +174,8 @@ async function stopDrive() {
   switching = true;
   await fadeTo('');
   drive.stop();
+  wind.stop();
+  hideEnding();
   document.body.classList.remove('driving');
   globe.setActive(true);
   globe.resize();
@@ -158,6 +186,19 @@ async function stopDrive() {
 $('p-drive').addEventListener('click', startDrive);
 $('d-exit').addEventListener('click', stopDrive);
 $('d-view').addEventListener('click', () => drive.toggleView());
+$('d-sound').addEventListener('click', () => { $('d-sound-icon').textContent = wind.toggleMute() ? '🔇' : '🔊'; });
+$('e-back').addEventListener('click', stopDrive);
+$('e-again').addEventListener('click', async () => {
+  if (switching) return;
+  switching = true;
+  await fadeTo('');
+  hideEnding();
+  $('d-log').replaceChildren();
+  wind.start();
+  drive.start();
+  fade.classList.remove('on');
+  switching = false;
+});
 document.querySelectorAll('.touch-pad button').forEach((b) => {
   const set = (v) => (e) => { e.preventDefault(); drive.setTouch(b.dataset.axis, v); };
   b.addEventListener('pointerdown', set(Number(b.dataset.v)));
