@@ -46,14 +46,15 @@ const fmtNum = (n) => n.toLocaleString(getLang() === 'tr' ? 'tr-TR' : 'en-US');
 
 function fillPanel(rover) {
   const s = rover.stats;
-  const sols = t('panel.sols');
+  const unit = t(`panel.${s.unit}`);
+  $('p-last-label').textContent = t(s.lastLabel || 'panel.lastContact');
   $('p-place').textContent = t(`${rover.id}.place`);
   $('p-name').textContent = rover.name;
   $('p-tagline').textContent = t(`${rover.id}.tagline`);
   $('p-landed').textContent = fmtDate(s.landed);
-  $('p-last').textContent = fmtDate(s.lastContact);
-  $('p-planned').textContent = `${fmtNum(s.plannedSols)} ${sols}`;
-  $('p-lasted').textContent = `${fmtNum(s.sols)} ${sols}`;
+  $('p-last').textContent = fmtDate(s.last);
+  $('p-planned').textContent = `${fmtNum(s.planned)} ${unit}`;
+  $('p-lasted').textContent = `${fmtNum(s.lasted)} ${unit}`;
   $('p-distance').textContent = s.distanceKm < 1 ? `~${Math.round(s.distanceKm * 1000)} m` : `${fmtNum(s.distanceKm)} km`;
   $('p-drive').hidden = !rover.playable;
   panel.style.setProperty('--c', rover.color);

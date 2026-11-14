@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-const MARS_URL = 'models/Mars(yeni).glb';
+// NASA/USGS Viking MDIM 2.1 colorized global mosaic (equirectangular, -180°..180° east, north up)
+const MARS_MAP_URL = 'textures/mars_viking_mdim21_4k.jpg';
 const HOME_DISTANCE = 3.4;
 const FOCUS_DISTANCE = 2.1;
 
-// Convert latitude / east-longitude to a point on the unit sphere.
-// Matches the UV layout of models/Mars(yeni).glb (u = angle around +Y), mirrored so east is to the right.
+// Convert latitude / east-longitude to a point on the sphere.
+// Matches THREE.SphereGeometry's UVs with a map spanning -180°..180°: longitude 0 is on +X, 90°E on -Z.
 export function latLonToVec3(lat, lon, r = 1) {
   const phi = THREE.MathUtils.degToRad(lat);
-  const theta = -THREE.MathUtils.degToRad(lon);
-  return new THREE.Vector3(r * Math.cos(phi) * Math.cos(theta), r * Math.sin(phi), r * Math.cos(phi) * Math.sin(theta));
+  const lam = THREE.MathUtils.degToRad(lon);
+  return new THREE.Vector3(r * Math.cos(phi) * Math.cos(lam), r * Math.sin(phi), -r * Math.cos(phi) * Math.sin(lam));
 }
 
 export class Globe {
@@ -66,22 +66,15 @@ export class Globe {
   }
 
   async load() {
-    const loader = new GLTFLoader();
-    const gltf = await loader.loadAsync(MARS_URL, (e) => {
-      if (e.total && this.onProgress) this.onProgress(e.loaded / e.total);
-    });
-    const mars = gltf.scene;
-    // Drop the sculpting app's embedded light; we light the scene ourselves.
-    const lights = [];
-    mars.traverse((o) => { if (o.isLight) lights.push(o); });
-    lights.forEach((l) => l.parent.remove(l));
-    mars.traverse((o) => {
-      if (o.isMesh) {
-        o.material.vertexColors = false; // vertex paint is near-white; texture carries the look
-        o.material.needsUpdate = true;
-      }
-    });
+    const map = await new THREE.TextureLoader().loadAsync(MARS_MAP_URL);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    const mars = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 128, 64),
+      new THREE.MeshStandardMaterial({ map, roughness: 1, metalness: 0 }),
+    );
     this.planet.add(mars);
+    this.onProgress?.(1);
   }
 
   addMarkers(rovers, labelFor) {
@@ -201,7 +194,7 @@ export class Globe {
   }
 
   #addLights() {
-    this.scene.add(new THREE.AmbientLight(0xffe4cc, 0.35));
+    this.scene.add(new THREE.AmbientLight(0xffe4cc, 0.55));
     const sun = new THREE.DirectionalLight(0xfff1e0, 2.6);
     sun.position.set(-4, 2, 5);
     this.scene.add(sun);
@@ -247,7 +240,7 @@ export class Globe {
           // Back faces: d is ~0 at the outer edge and ~0.4 at the planet's limb
           float d = clamp(-dot(vNormal, vView), 0.0, 1.0);
           float glow = pow(clamp(d / 0.4, 0.0, 1.0), 2.5);
-          gl_FragColor = vec4(color, glow * 0.85);
+          gl_FragColor = vec4(color, glow * 0.6);
         }`,
       transparent: true,
       blending: THREE.AdditiveBlending,
