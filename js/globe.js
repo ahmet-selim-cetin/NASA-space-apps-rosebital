@@ -8,8 +8,8 @@ const MARS_MAP_URL = 'textures/mars_viking_mdim21_4k.jpg';
 const MOON_MAP_URL = 'textures/moon_4k.jpg';
 // Each world: map, light colours/intensities, sun position, orange air glow or not, home view (lat, lon).
 const WORLDS = {
-  mars: { map: MARS_MAP_URL, ambient: [0xffe4cc, 0.55], sun: [0xfff1e0, 2.6], sunPos: [-4, 2, 5], rim: [0xff8a4a, 0.6], glow: true, home: [12, 330] },
-  moon: { map: MOON_MAP_URL, ambient: [0xffffff, 0.45], sun: [0xffffff, 2.4], sunPos: [3, 2, 5], rim: [0x9fb4d8, 0.35], glow: false, home: [6, 340] },
+  mars: { map: MARS_MAP_URL, ambient: [0xffe4cc, 0.55], sun: [0xfff1e0, 2.6], sunPos: [-4, 2, 5], rim: [0xff8a4a, 0.6], glow: true, home: [12, 330], homeDist: 3.4, maxDist: 7 },
+  moon: { map: MOON_MAP_URL, ambient: [0xffffff, 0.45], sun: [0xffffff, 2.4], sunPos: [3, 2, 5], rim: [0x9fb4d8, 0.35], glow: false, home: [6, 340], homeDist: 6.6, maxDist: 10 },
 };
 const HOME_DISTANCE = 3.4;
 const FOCUS_DISTANCE = 2.1;
@@ -107,7 +107,9 @@ export class Globe {
     this.#showMarkers();
     this.setSelected(null);
     this.viewShiftTarget = 0;
-    this.#startFlight(latLonToVec3(w.home[0], w.home[1]).normalize(), HOME_DISTANCE);
+    // The Moon is about half as wide as Mars, so it is shown from about twice as far away.
+    this.controls.maxDistance = w.maxDist;
+    this.#startFlight(latLonToVec3(w.home[0], w.home[1]).normalize(), w.homeDist);
     this.controls.autoRotate = true;
   }
 
@@ -164,7 +166,7 @@ export class Globe {
 
   flyHome() {
     const dir = this.camera.position.clone().normalize();
-    this.#startFlight(dir, HOME_DISTANCE);
+    this.#startFlight(dir, WORLDS[this.world].homeDist);
     this.viewShiftTarget = 0;
     this.setSelected(null);
   }

@@ -34,9 +34,9 @@ Battery, solar-power and temperature values in the game are illustrations; the d
 
 ### The story / Hikâye
 
-The Spirit, Opportunity, Sojourner and Ingenuity stories were written by **Team Rosebital** in Turkish and translated into English.
+The Spirit, Opportunity, Sojourner, Ingenuity and Surveyor 3 & Apollo 12 (Moon) stories were written by **Team Rosebital** in Turkish and translated into English.
 Their facts were checked against the NASA / JPL sources below.
-*Spirit, Opportunity, Sojourner ve Ingenuity hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
+*Spirit, Opportunity, Sojourner, Ingenuity ve Surveyor 3 & Apollo 12 (Ay) hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
 
 ### Built with / Kullanılan teknolojiler
 
@@ -57,6 +57,7 @@ js/data.js          mission numbers and coordinates
 js/twins.js         Spirit & Opportunity story (Team Rosebital)
 js/sojourner.js     Sojourner story (Team Rosebital)
 js/ingenuity.js     Ingenuity story (Team Rosebital)
+js/moon.js          Surveyor 3 & Apollo 12 Moon story (Team Rosebital)
 js/stories.js       stories for all rovers
 js/slides.js        3-slide picture stories
 js/i18n.js          English / Türkçe texts
@@ -116,6 +117,14 @@ All images are NASA imagery from the NASA Image and Video Library (https://image
 | Ingenuity 1 | WATSON Spies Ingenuity on Perseverance Rover's Belly — https://photojournal.jpl.nasa.gov/catalog/PIA24424 | NASA/JPL-Caltech/MSSS |
 | Ingenuity 2 | Ingenuity's First Flight Recorded by Mastcam-Z — https://photojournal.jpl.nasa.gov/catalog/PIA24550 | NASA/JPL-Caltech/ASU/MSSS |
 | Ingenuity 3 | Ingenuity Spots the Shadow of Its Damaged Rotor Blade — https://photojournal.jpl.nasa.gov/catalog/PIA26243 | NASA/JPL-Caltech |
+| Moon 1 | Surveyor 3 footpad and soil sampler, Apollo 12 EVA-2 — https://images.nasa.gov/details/as12-48-7110 | NASA |
+| Moon 2 | Two U.S. spacecraft on the Moon: Surveyor 3 and the Apollo 12 LM — https://images.nasa.gov/details/AS12-48-7134 | NASA |
+| Moon 3 | View of Surveyor III in its crater — https://images.nasa.gov/details/as12-48-7121 | NASA |
+
+### Moon / Ay
+- Moon map: texture taken from `models/moon (1).glb` — "moon" by RenderX on Sketchfab, licensed CC BY 4.0: https://sketchfab.com/3d-models/moon-26cc0b7878bb4d919b68e2be399db466 (flipped north-up and resized to `textures/moon_4k.jpg`).
+- Surveyor 3 — NASA Science: https://science.nasa.gov/mission/surveyor-3/
+- Apollo 12 lunar module (samples, time on the surface, ascent stage impact) — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C
 
 ### Team source sheet / Takım kaynak tablosu
 https://docs.google.com/spreadsheets/d/1B27CVgnJ7uxL9cvEWX8QfvTVxY87lROzzPXS3N427qw

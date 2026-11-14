@@ -4,6 +4,7 @@
 import { TWINS } from './twins.js';
 import { INGENUITY } from './ingenuity.js';
 import { SOJOURNER } from './sojourner.js';
+import { APOLLO12 } from './moon.js';
 
 export const STORIES = {
   ...TWINS, // Spirit & Opportunity: the team's own story, see twins.js
@@ -11,4 +12,5 @@ export const STORIES = {
   sojourner: SOJOURNER, // the team's own story, see sojourner.js
 
   ingenuity: INGENUITY, // the team's own story, see ingenuity.js
+  apollo12: APOLLO12, // the Moon: Surveyor 3 & Apollo 12, one shared story, see moon.js
 };
