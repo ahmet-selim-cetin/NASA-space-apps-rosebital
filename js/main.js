@@ -27,10 +27,13 @@ globe.load().then(() => {
   const start = $('start');
   start.disabled = false;
   start.classList.add('ready');
-  // Deep link: index.html#opportunity skips the intro and opens that rover
+  $('start-moon').disabled = false;
+  // Deep link: index.html#opportunity skips the intro and opens that rover; #moon opens the Moon
   const linked = ROVERS.find((r) => r.id === location.hash.slice(1));
-  if (location.hash === '#mars' || location.hash === '#drive' || linked) enter();
-  if (linked) openRover(linked);
+  const moonLink = location.hash === '#moon' || linked?.world === 'moon';
+  if (location.hash === '#mars' || location.hash === '#drive' || moonLink || linked) enter();
+  const ready = moonLink ? setWorld('moon') : Promise.resolve();
+  ready.then(() => { if (linked) openRover(linked); });
   if (location.hash === '#drive') startDrive();
 }).catch((err) => {
   console.error(err);
@@ -44,25 +47,65 @@ function enter() {
   setTimeout(() => $('hint').classList.add('hidden'), 7000);
 }
 $('start').addEventListener('click', enter);
+$('start-moon').addEventListener('click', () => { enter(); setWorld('moon'); });
+
+// ---------- Mars | Moon ----------
+let world = 'mars';
+function markWorld() {
+  document.querySelectorAll('[data-world]').forEach((b) => b.classList.toggle('active', b.dataset.world === world));
+  $('credit').dataset.i18n = world === 'moon' ? 'credit.moon' : 'credit';
+  $('credit').textContent = t($('credit').dataset.i18n);
+}
+async function setWorld(next) {
+  if (next === world || drive.running) return;
+  if (slidesOpen()) { slidesEl.classList.remove('open'); slidesEl.setAttribute('aria-hidden', 'true'); }
+  selected = null;
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
+  world = next;
+  markWorld();
+  await globe.setWorld(next);
+}
+document.querySelectorAll('[data-world]').forEach((b) => b.addEventListener('click', () => setWorld(b.dataset.world)));
+markWorld();
 
 // ---------- Panel ----------
 const fmtDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(getLang() === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 const fmtNum = (n) => n.toLocaleString(getLang() === 'tr' ? 'tr-TR' : 'en-US');
 
 function fillPanel(rover) {
-  const s = rover.stats;
-  const unit = t(`panel.${s.unit}`);
-  $('p-last-label').textContent = t(s.lastLabel || 'panel.lastContact');
   $('p-place').textContent = t(`${rover.id}.place`);
   $('p-name').textContent = rover.name;
   $('p-tagline').textContent = t(`${rover.id}.tagline`);
-  $('p-landed').textContent = fmtDate(s.landed);
-  $('p-last').textContent = fmtDate(s.last);
-  $('p-planned').textContent = `${fmtNum(s.planned)} ${unit}`;
-  $('p-lasted').textContent = `${fmtNum(s.lasted)} ${unit}`;
-  $('p-distance').textContent = s.distanceKm < 1 ? `~${Math.round(s.distanceKm * 1000)} m` : `${fmtNum(s.distanceKm)} km`;
   $('p-drive').hidden = !rover.playable;
+  panel.style.setProperty('--c', rover.color);
 
+  // Sites with their own fact list (the Moon's shared beacon) use it instead of the rover numbers.
+  $('p-stats').hidden = !rover.stats;
+  $('p-facts').hidden = !rover.facts;
+  if (rover.facts) {
+    $('p-facts').replaceChildren(...rover.facts[getLang()].map(([label, value]) => {
+      const row = document.createElement('div');
+      const dt = document.createElement('dt'); dt.textContent = label;
+      const dd = document.createElement('dd'); dd.textContent = value;
+      row.append(dt, dd);
+      return row;
+    }));
+  }
+  if (rover.stats) {
+    const s = rover.stats;
+    const unit = t(`panel.${s.unit}`);
+    $('p-last-label').textContent = t(s.lastLabel || 'panel.lastContact');
+    $('p-landed').textContent = fmtDate(s.landed);
+    $('p-last').textContent = fmtDate(s.last);
+    $('p-planned').textContent = `${fmtNum(s.planned)} ${unit}`;
+    $('p-lasted').textContent = `${fmtNum(s.lasted)} ${unit}`;
+    $('p-distance').textContent = s.distanceKm < 1 ? `~${Math.round(s.distanceKm * 1000)} m` : `${fmtNum(s.distanceKm)} km`;
+  }
+
+  // The long story is optional (not written yet for the Moon).
+  $('p-story-box').hidden = !STORIES[rover.id];
+  if (!STORIES[rover.id]) return;
   const story = STORIES[rover.id][getLang()];
   const list = $('p-story');
   list.replaceChildren(...story.chapters.map((c) => {
@@ -75,7 +118,6 @@ function fillPanel(rover) {
     return li;
   }));
   $('p-closing').textContent = story.closing;
-  panel.style.setProperty('--c', rover.color);
 }
 
 // Clicking a beacon: fly there and tell the story in 3 picture slides first; the panel follows.
@@ -132,6 +174,7 @@ function renderSlide() {
   $('sl-prev').hidden = slideIdx === 0;
   $('sl-next').hidden = last;
   $('sl-story').hidden = !last;
+  $('sl-story').textContent = t(STORIES[selected.id] ? 'slides.story' : 'slides.info');
   $('sl-drive').hidden = !(last && selected.playable);
   // restart the entrance animation
   for (const el of [img, slidesEl.querySelector('.sl-body')]) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
@@ -184,6 +227,7 @@ window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && selected &
 
 onLangChange(() => {
   globe.updateMarkerLabels((r) => t(`${r.id}.place`));
+  markWorld();
   if (selected) fillPanel(selected);
   if (selected && slidesOpen()) renderSlide();
 });

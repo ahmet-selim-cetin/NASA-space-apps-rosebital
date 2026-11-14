@@ -350,3 +350,14 @@ em, .tagline, .fade p, .story blockquote, .ending-closing { font-style: normal; 
 /* Slide credit line: a link to the image's NASA page */
 .sl-figure figcaption a { display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; font-weight: 700; color: #e8b98f; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(232, 185, 143, 0.45); }
 .sl-figure figcaption a:hover, .sl-figure figcaption a:focus-visible { color: #ffd2a8; text-decoration-color: currentColor; }
+
+/* ---------- Mars | Moon switch ---------- */
+.top-right { display: flex; align-items: center; gap: 10px; }
+.world-switch { opacity: 0; visibility: hidden; transition: opacity 1.2s; }
+body.exploring .world-switch { opacity: 1; visibility: visible; }
+body.driving .world-switch { display: none; }
+.world-switch button { letter-spacing: 0.02em; }
+#start-moon { min-width: 220px; margin-left: 10px; color: var(--ink); }
+#start-moon:disabled { opacity: 0.4; cursor: default; }
+.stats[hidden], .story[hidden] { display: none; }
+@media (max-width: 560px) { #start-moon { margin: 10px 0 0; } }

@@ -87,9 +87,15 @@
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand"><span class="brand-dot"></span><span data-i18n="title.top"></span>&nbsp;<em data-i18n="title.bottom"></em></div>
-    <div class="lang-switch" role="group" aria-label="Language">
-      <button data-lang="en">EN</button>
-      <button data-lang="tr">TR</button>
+    <div class="top-right">
+      <div class="lang-switch world-switch" role="group" aria-label="World">
+        <button data-world="mars" data-i18n="world.mars"></button>
+        <button data-world="moon" data-i18n="world.moon"></button>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button data-lang="en">EN</button>
+        <button data-lang="tr">TR</button>
+      </div>
     </div>
   </header>
 
@@ -103,6 +109,7 @@
         <span class="loader-text" data-i18n="intro.start"></span>
         <span class="progress"><span id="progress-bar"></span></span>
       </button>
+      <button id="start-moon" class="btn btn-ghost" disabled><span data-i18n="intro.moon"></span></button>
     </div>
   </section>
 
@@ -115,17 +122,18 @@
     <p class="eyebrow" id="p-place"></p>
     <h2 id="p-name"></h2>
     <p class="tagline" id="p-tagline"></p>
-    <dl class="stats">
+    <dl class="stats" id="p-stats">
       <div><dt data-i18n="panel.landed"></dt><dd id="p-landed"></dd></div>
       <div><dt id="p-last-label"></dt><dd id="p-last"></dd></div>
       <div><dt data-i18n="panel.planned"></dt><dd id="p-planned"></dd></div>
       <div><dt data-i18n="panel.lasted"></dt><dd id="p-lasted"></dd></div>
       <div><dt data-i18n="panel.distance"></dt><dd id="p-distance"></dd></div>
     </dl>
+    <dl class="stats" id="p-facts" hidden></dl>
     <div class="actions">
       <button class="btn btn-primary" id="p-drive"><span data-i18n="panel.drive"></span></button>
     </div>
-    <section class="story">
+    <section class="story" id="p-story-box">
       <p class="eyebrow" data-i18n="panel.storyTitle"></p>
       <ol id="p-story" class="timeline"></ol>
       <blockquote id="p-closing"></blockquote>
@@ -156,7 +164,7 @@
     </div>
   </section>
 
-  <footer class="credit" data-i18n="credit"></footer>
+  <footer class="credit" id="credit" data-i18n="credit"></footer>
 
   <script type="module" src="js/main.js"></script>
 </body>

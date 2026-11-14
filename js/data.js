@@ -37,4 +37,18 @@ export const ROVERS = [
     playable: false,
     stats: { landed: '2021-02-18', last: '2024-01-18', lastLabel: 'panel.lastFlight', distanceKm: 17, planned: 5, lasted: 72, unit: 'flights' },
   },
+  // The Moon: Surveyor 3 and Apollo 12 landed about 180 m apart, so they share one beacon and one story.
+  {
+    id: 'apollo12',
+    world: 'moon',
+    name: 'Apollo 12 · Surveyor 3',
+    lat: -3.0124,
+    lon: -23.4216,
+    color: '#bcd4ff',
+    playable: false,
+    facts: {
+      tr: [['Surveyor 3 inişi', '20 Nisan 1967'], ['Surveyor 3 son iletişim', '4 Mayıs 1967'], ['Apollo 12 inişi', '18 Kasım 1969'], ['Aradaki mesafe', '180 m'], ['Surveyor 3\'ün fotoğrafları', '6.326']],
+      en: [['Surveyor 3 landed', 'April 20, 1967'], ['Surveyor 3 last contact', 'May 4, 1967'], ['Apollo 12 landed', 'November 18, 1969'], ['Distance apart', '180 m'], ['Photos by Surveyor 3', '6,326']],
+    },
+  },
 ];

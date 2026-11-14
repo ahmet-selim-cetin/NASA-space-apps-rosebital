@@ -4,6 +4,13 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 // NASA/USGS Viking MDIM 2.1 colorized global mosaic (equirectangular, -180°..180° east, north up)
 const MARS_MAP_URL = 'textures/mars_viking_mdim21_4k.jpg';
+// Moon map: texture of the team's Moon model (models/moon (1).glb, "moon" by RenderX, CC-BY 4.0), flipped north-up.
+const MOON_MAP_URL = 'textures/moon_4k.jpg';
+// Each world: map, light colours/intensities, sun position, orange air glow or not, home view (lat, lon).
+const WORLDS = {
+  mars: { map: MARS_MAP_URL, ambient: [0xffe4cc, 0.55], sun: [0xfff1e0, 2.6], sunPos: [-4, 2, 5], rim: [0xff8a4a, 0.6], glow: true, home: [12, 330] },
+  moon: { map: MOON_MAP_URL, ambient: [0xffffff, 0.45], sun: [0xffffff, 2.4], sunPos: [3, 2, 5], rim: [0x9fb4d8, 0.35], glow: false, home: [6, 340] },
+};
 const HOME_DISTANCE = 3.4;
 const FOCUS_DISTANCE = 2.1;
 
@@ -21,6 +28,8 @@ export class Globe {
     this.onSelect = onSelect;
     this.onProgress = onProgress;
     this.markers = [];
+    this.world = 'mars';
+    this.maps = {};
     this.active = true;
     this.flight = null;
     this.viewShift = 0; // 0..1, slides the planet left when the side panel is open
@@ -69,12 +78,44 @@ export class Globe {
     const map = await new THREE.TextureLoader().loadAsync(MARS_MAP_URL);
     map.colorSpace = THREE.SRGBColorSpace;
     map.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    const mars = new THREE.Mesh(
+    this.maps.mars = map;
+    this.surface = new THREE.Mesh(
       new THREE.SphereGeometry(1, 128, 64),
       new THREE.MeshStandardMaterial({ map, roughness: 1, metalness: 0 }),
     );
-    this.planet.add(mars);
+    this.planet.add(this.surface);
     this.onProgress?.(1);
+  }
+
+  // Switch the globe between Mars and the Moon: map, lighting, air glow and which beacons are shown.
+  async setWorld(name) {
+    const w = WORLDS[name];
+    if (!w || name === this.world) return;
+    if (!this.maps[name]) {
+      const map = await new THREE.TextureLoader().loadAsync(w.map);
+      map.colorSpace = THREE.SRGBColorSpace;
+      map.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+      this.maps[name] = map;
+    }
+    this.world = name;
+    this.surface.material.map = this.maps[name];
+    this.surface.material.needsUpdate = true;
+    this.ambient.color.set(w.ambient[0]); this.ambient.intensity = w.ambient[1];
+    this.sun.color.set(w.sun[0]); this.sun.intensity = w.sun[1]; this.sun.position.set(...w.sunPos);
+    this.rim.color.set(w.rim[0]); this.rim.intensity = w.rim[1];
+    this.atmosphere.visible = w.glow;
+    this.#showMarkers();
+    this.setSelected(null);
+    this.viewShiftTarget = 0;
+    this.#startFlight(latLonToVec3(w.home[0], w.home[1]).normalize(), HOME_DISTANCE);
+    this.controls.autoRotate = true;
+  }
+
+  #showMarkers() {
+    this.markers.forEach((m) => {
+      const on = (m.rover.world || 'mars') === this.world;
+      m.obj.visible = on; m.pillar.visible = on;
+    });
   }
 
   addMarkers(rovers, labelFor) {
@@ -100,8 +141,9 @@ export class Globe {
       pillar.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), pos.clone().normalize());
       this.planet.add(pillar);
 
-      this.markers.push({ rover, el, obj, normal: pos.clone().normalize() });
+      this.markers.push({ rover, el, obj, pillar, normal: pos.clone().normalize() });
     });
+    this.#showMarkers();
     this.updateMarkerLabels(labelFor);
   }
 
@@ -183,6 +225,7 @@ export class Globe {
     const camDir = this.camera.position.clone().normalize();
     const time = performance.now() / 1000;
     this.markers.forEach((m) => {
+      if (!m.obj.visible) return;
       const facing = m.normal.dot(camDir);
       m.el.style.opacity = THREE.MathUtils.clamp((facing - 0.05) * 5, 0, 1);
       m.el.style.pointerEvents = facing > 0.15 ? 'auto' : 'none';
@@ -194,13 +237,14 @@ export class Globe {
   }
 
   #addLights() {
-    this.scene.add(new THREE.AmbientLight(0xffe4cc, 0.55));
-    const sun = new THREE.DirectionalLight(0xfff1e0, 2.6);
-    sun.position.set(-4, 2, 5);
-    this.scene.add(sun);
-    const rim = new THREE.DirectionalLight(0xff8a4a, 0.6);
-    rim.position.set(5, -1, -4);
-    this.scene.add(rim);
+    this.ambient = new THREE.AmbientLight(0xffe4cc, 0.55);
+    this.scene.add(this.ambient);
+    this.sun = new THREE.DirectionalLight(0xfff1e0, 2.6);
+    this.sun.position.set(-4, 2, 5);
+    this.scene.add(this.sun);
+    this.rim = new THREE.DirectionalLight(0xff8a4a, 0.6);
+    this.rim.position.set(5, -1, -4);
+    this.scene.add(this.rim);
   }
 
   #addStars() {

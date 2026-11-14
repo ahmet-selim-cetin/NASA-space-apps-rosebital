@@ -73,4 +73,23 @@ export const SLIDES = {
       en: { when: "January 18, 2024", title: "Flight 72", text: "Over flat sand, its navigation system found no patterns to follow. It landed hard and all four blades broke. Built for 5 flights, it flew 72.", cap: 'Ingenuity photographed the shadow of its own damaged blade' },
     },
   ],
+
+  // Moon: one shared story for Surveyor 3 and Apollo 12 (robot lands → astronauts visit → what stayed behind).
+  apollo12: [
+    {
+      img: 'img/slides/apollo12-1.jpg', credit: 'NASA · AS12-48-7110',
+      tr: { when: 'Nisan 1967', title: "Zıplaya zıplaya Ay'a", text: "Surveyor 3 Ay'a çarptı, iki kez zıpladı ve üçüncüde yumuşak indi. Toprağı kazdı: Ay toprağı bir Apollo ay modülünü taşıyacak kadar sağlamdı.", cap: "Surveyor 3'ün ayağı ve zıplarken toprakta bıraktığı iz" },
+      en: { when: 'April 1967', title: 'Bouncing onto the Moon', text: 'Surveyor 3 hit the Moon, bounced twice and landed softly the third time. It dug into the soil: the ground was strong enough to hold an Apollo lunar module.', cap: "Surveyor 3's footpad and the mark it left when it bounced" },
+    },
+    {
+      img: 'img/slides/apollo12-2.jpg', credit: 'NASA · AS12-48-7134',
+      tr: { when: 'Kasım 1969', title: 'İki buçuk yıl sonra bir ziyaret', text: "Apollo 12 astronotları Surveyor 3'e sadece 180 metre uzağa indi. İkinci gün ona yürüdüler; kamerasını ve toprak kepçesini söküp Dünya'ya götürdüler.", cap: "Astronot Surveyor 3'ün yanında; arkada ay modülü Intrepid" },
+      en: { when: 'November 1969', title: 'A visit, two and a half years later', text: 'The Apollo 12 astronauts landed just 180 metres from Surveyor 3. The next day they walked to it and took its camera and soil scoop back to Earth.', cap: 'An astronaut beside Surveyor 3; the lunar module Intrepid behind' },
+    },
+    {
+      img: 'img/slides/apollo12-3.jpg', credit: 'NASA · AS12-48-7121',
+      tr: { when: 'Bugün', title: 'Hâlâ orada', text: "Gövdesi Ay'da kaldı. İki buçuk yıl ziyaretçi bekledi. Ziyaretçi geldi, bir parçasını aldı, gitti. Surveyor 3 beklemeye devam ediyor.", cap: "Surveyor 3, Fırtınalar Okyanusu'ndaki küçük kraterinde" },
+      en: { when: 'Today', title: 'Still there', text: 'Its body stayed on the Moon. For two and a half years it waited for a visitor. The visitor came, took a piece of it, and left. Surveyor 3 is still waiting.', cap: 'Surveyor 3 in its small crater in the Ocean of Storms' },
+    },
+  ],
 };
