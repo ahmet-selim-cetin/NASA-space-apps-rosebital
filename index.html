@@ -132,6 +132,30 @@
     </section>
   </aside>
 
+  <!-- Picture story: 3 slides shown when a beacon is clicked -->
+  <section id="slides" class="slides" aria-hidden="true" role="dialog" aria-labelledby="sl-title">
+    <div class="sl-card">
+      <button class="sl-close" id="sl-close" aria-label="Close">×</button>
+      <figure class="sl-figure">
+        <img id="sl-img" alt="">
+        <figcaption><span id="sl-cap"></span> <small id="sl-credit"></small></figcaption>
+      </figure>
+      <div class="sl-body">
+        <p class="sl-kicker"><span id="sl-name"></span> · <span id="sl-count"></span></p>
+        <time id="sl-when"></time>
+        <h2 id="sl-title"></h2>
+        <p id="sl-text"></p>
+        <div class="sl-dots" id="sl-dots"></div>
+        <div class="sl-nav">
+          <button class="btn btn-ghost" id="sl-prev" data-i18n="slides.prev"></button>
+          <button class="btn btn-primary" id="sl-next" data-i18n="slides.next"></button>
+          <button class="btn btn-ghost" id="sl-story" data-i18n="slides.story"></button>
+          <button class="btn btn-primary" id="sl-drive" data-i18n="panel.drive"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="credit" data-i18n="credit"></footer>
 
   <script type="module" src="js/main.js"></script>

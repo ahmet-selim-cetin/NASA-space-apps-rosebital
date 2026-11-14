@@ -8,7 +8,7 @@ export const ROVERS = [
     lon: 354.47417,
     color: '#ffb347',
     playable: true,
-    stats: { landed: '2004-01-25', last: '2018-06-10', distanceKm: 45.16, planned: 90, lasted: 5111, unit: 'sols' },
+    stats: { landed: '2004-01-24', last: '2018-06-10', distanceKm: 45.16, planned: 90, lasted: 5111, unit: 'sols' },
   },
   {
     id: 'spirit',
@@ -17,7 +17,7 @@ export const ROVERS = [
     lon: 175.4729,
     color: '#7fd3ff',
     playable: false,
-    stats: { landed: '2004-01-04', last: '2010-03-22', distanceKm: 7.73, planned: 90, lasted: 2210, unit: 'sols' },
+    stats: { landed: '2004-01-03', last: '2010-03-22', distanceKm: 7.73, planned: 90, lasted: 2210, unit: 'sols' },
   },
   {
     id: 'sojourner',

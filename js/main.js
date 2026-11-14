@@ -4,6 +4,7 @@ import { DriveSim } from './drive.js';
 import { WindAudio } from './audio.js';
 import { ROVERS } from './data.js';
 import { STORIES } from './stories.js';
+import { SLIDES } from './slides.js';
 import { t, getLang, setLang, onLangChange, applyI18n } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -68,25 +69,108 @@ function fillPanel(rover) {
     const li = document.createElement('li');
     const when = document.createElement('time');
     const title = document.createElement('h3');
-    const text = document.createElement('p');
-    when.textContent = c.when; title.textContent = c.title; text.textContent = c.text;
-    li.append(when, title, text);
+    when.textContent = c.when; title.textContent = c.title;
+    const paras = c.text.split('\n\n').map((s) => { const p = document.createElement('p'); p.textContent = s; return p; });
+    li.append(when, title, ...paras);
     return li;
   }));
   $('p-closing').textContent = story.closing;
   panel.style.setProperty('--c', rover.color);
 }
 
+// Clicking a beacon: fly there and tell the story in 3 picture slides first; the panel follows.
 function openRover(rover) {
   selected = rover;
   fillPanel(rover);
-  panel.scrollTop = 0;
-  panel.classList.add('open');
-  panel.setAttribute('aria-hidden', 'false');
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
   globe.setSelected(rover.id);
   globe.flyTo(rover);
   $('hint').classList.add('hidden');
+  openSlides(rover);
 }
+
+function showPanel() {
+  if (!selected) return;
+  panel.scrollTop = 0;
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+}
+
+// ---------- Picture slides ----------
+const slidesEl = $('slides');
+let slideIdx = 0;
+const slidesOpen = () => slidesEl.classList.contains('open');
+
+function renderSlide() {
+  const list = SLIDES[selected.id];
+  const sl = list[slideIdx];
+  const txt = sl[getLang()];
+  const img = $('sl-img');
+  img.src = sl.img; img.alt = txt.cap;
+  $('sl-cap').textContent = txt.cap;
+  // Credit line links to the image's NASA page: Photojournal for PIA codes, NASA Image Library otherwise.
+  const code = sl.credit.split('·').pop().trim();
+  const link = document.createElement('a');
+  link.href = code.startsWith('PIA') ? `https://photojournal.jpl.nasa.gov/catalog/${code}` : `https://images.nasa.gov/details/${code}`;
+  link.target = '_blank'; link.rel = 'noopener';
+  link.textContent = `${sl.credit} ↗`;
+  $('sl-credit').replaceChildren(link);
+  $('sl-name').textContent = selected.name;
+  $('sl-count').textContent = `${slideIdx + 1} / ${list.length}`;
+  $('sl-when').textContent = txt.when;
+  $('sl-title').textContent = txt.title;
+  $('sl-text').textContent = txt.text;
+  $('sl-dots').replaceChildren(...list.map((_, i) => {
+    const d = document.createElement('button');
+    d.className = i === slideIdx ? 'on' : '';
+    d.setAttribute('aria-label', `${i + 1}`);
+    d.addEventListener('click', () => goSlide(i));
+    return d;
+  }));
+  const last = slideIdx === list.length - 1;
+  $('sl-prev').hidden = slideIdx === 0;
+  $('sl-next').hidden = last;
+  $('sl-story').hidden = !last;
+  $('sl-drive').hidden = !(last && selected.playable);
+  // restart the entrance animation
+  for (const el of [img, slidesEl.querySelector('.sl-body')]) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+}
+
+function goSlide(i) {
+  const n = SLIDES[selected.id].length;
+  if (i < 0 || i >= n || i === slideIdx) return;
+  slideIdx = i;
+  renderSlide();
+}
+
+function openSlides(rover) {
+  slideIdx = 0;
+  slidesEl.style.setProperty('--c', rover.color);
+  renderSlide();
+  slidesEl.classList.add('open');
+  slidesEl.setAttribute('aria-hidden', 'false');
+  SLIDES[rover.id].forEach((s) => { new Image().src = s.img; }); // preload
+}
+
+function closeSlides() {
+  slidesEl.classList.remove('open');
+  slidesEl.setAttribute('aria-hidden', 'true');
+  showPanel();
+}
+
+$('sl-next').addEventListener('click', () => goSlide(slideIdx + 1));
+$('sl-prev').addEventListener('click', () => goSlide(slideIdx - 1));
+$('sl-story').addEventListener('click', closeSlides);
+$('sl-close').addEventListener('click', closeSlides);
+$('sl-drive').addEventListener('click', () => { closeSlides(); startDrive(); });
+slidesEl.addEventListener('click', (e) => { if (e.target === slidesEl) closeSlides(); });
+window.addEventListener('keydown', (e) => {
+  if (!slidesOpen()) return;
+  if (e.key === 'ArrowRight') goSlide(slideIdx + 1);
+  else if (e.key === 'ArrowLeft') goSlide(slideIdx - 1);
+  else if (e.key === 'Escape') { e.stopImmediatePropagation(); closeSlides(); }
+});
 
 function closePanel() {
   selected = null;
@@ -101,6 +185,7 @@ window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && selected &
 onLangChange(() => {
   globe.updateMarkerLabels((r) => t(`${r.id}.place`));
   if (selected) fillPanel(selected);
+  if (selected && slidesOpen()) renderSlide();
 });
 applyI18n();
 
