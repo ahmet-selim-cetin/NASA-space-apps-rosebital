@@ -368,3 +368,23 @@ body.driving .world-switch { display: none; }
 .beacon:hover .beacon-label, .beacon:focus-visible .beacon-label { border-color: var(--c); background: rgba(34, 22, 18, 0.95); transform: translateY(-50%) scale(1.07); box-shadow: 0 0 18px -4px var(--c); }
 .beacon-dot { transition: transform .2s; }
 .beacon:hover .beacon-dot { transform: scale(1.4); }
+
+/* ---------- Intro: Hacked title font, team logo, Mars (orange) and Moon (white) buttons ---------- */
+/* Font "Hacked" by David Libeau, CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 */
+@font-face { font-family: 'Hacked'; src: url('../fonts/hacked-font/Hacked-KerX.ttf') format('truetype'); font-display: swap; }
+.intro h1 { font-family: 'Hacked', 'Nunito', system-ui, sans-serif; font-weight: 400; letter-spacing: 0.02em; font-size: clamp(56px, 10vw, 112px); line-height: 0.98; margin: 0 0 22px; }
+.team-logo { display: block; margin: 0 auto 18px; width: 240px; max-width: 70vw; height: auto; }
+#start { background: #e8672f; color: #1b0b04; border-color: transparent; }
+#start:not(:disabled):hover { background: #ff7d45; transform: translateY(-1px); }
+#start .progress { background: rgba(0, 0, 0, 0.22); }
+#start-moon { background: #fff; color: #121317; border-color: transparent; }
+#start-moon:not(:disabled):hover { background: #e6ebf2; transform: translateY(-1px); }
+.font-credit { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); margin: 0; font-size: 12px; font-weight: 600; color: rgba(168, 153, 140, 0.75); white-space: nowrap; }
+.font-credit a { color: inherit; text-underline-offset: 3px; }
+.font-credit a:hover { color: var(--ink); }
+
+/* ---------- Team logo in the footer and on the ending screen ---------- */
+.credit { display: flex; align-items: center; gap: 12px; }
+.credit-logo { height: 34px; width: auto; flex: none; }
+.intro:not(.gone) ~ .credit { visibility: hidden; }
+.ending-logo { position: absolute; left: 24px; bottom: 18px; width: 101px; height: auto; }

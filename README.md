@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/rosebital-logo.svg" width="360" alt="Rosebital, GZOAL Tech Team" /></p>
+
 # NASA-space-apps-rosebital
 Rosebital is the technology team of Gulizar Zeki Obdan Anadolu Lisesi in Istanbul, Türkiye.   Our name combines “rose” and “orbital”, inspired by the rose gardens that give our school its name. We imagine roses blooming in orbits out in space.more adventure
 
@@ -62,6 +64,10 @@ js/stories.js       stories for all rovers
 js/slides.js        3-slide picture stories
 js/i18n.js          English / Türkçe texts
 img/slides/         NASA photos for the slides
+img/share-card.png  social share card (team logo)
+assets/             team logo (SVG), tab icon
+fonts/              title font "Hacked"
+favicon.ico         tab icon (fallback)
 textures/           NASA Mars map
 models/             3D models
 ```
@@ -125,6 +131,11 @@ All images are NASA imagery from the NASA Image and Video Library (https://image
 - Moon map: texture taken from `models/moon (1).glb` — "moon" by RenderX on Sketchfab, licensed CC BY 4.0: https://sketchfab.com/3d-models/moon-26cc0b7878bb4d919b68e2be399db466 (flipped north-up and resized to `textures/moon_4k.jpg`).
 - Surveyor 3 — NASA Science: https://science.nasa.gov/mission/surveyor-3/
 - Apollo 12 lunar module (samples, time on the surface, ascent stage impact) — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C
+
+### Fonts and logo / Yazı tipleri ve logo
+- **Hacked** (intro title) — by David Libeau, licensed CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 · `fonts/hacked-font/`
+- **Nunito** (all other text) — Google Fonts, SIL Open Font License: https://fonts.google.com/specimen/Nunito
+- **Logo** — Rosebital / GZOAL Tech Team logo, made by the team (`assets/rosebital-lockup-dark.svg`). `assets/rosebital-logo.svg`, `assets/rosebital-pill.svg`, `assets/favicon.svg`, `favicon.ico` and `img/share-card.png` are derived from it (background removed, straightened, cropped).
 
 ### Team source sheet / Takım kaynak tablosu
 https://docs.google.com/spreadsheets/d/1B27CVgnJ7uxL9cvEWX8QfvTVxY87lROzzPXS3N427qw
