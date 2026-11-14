@@ -21,6 +21,46 @@
 <body>
   <div id="stage"></div>
 
+  <!-- First-person drive -->
+  <div id="drive" class="drive"></div>
+  <div id="drive-ui" class="drive-ui">
+    <div class="hud hud-top">
+      <p class="hud-title">MER-B · OPPORTUNITY</p>
+      <p class="hud-sub"><span data-i18n="drive.location"></span> · SOL <span id="h-sol">5100</span></p>
+    </div>
+    <div class="drive-actions">
+      <button class="btn btn-hud" id="d-view"><span data-i18n="drive.view"></span> <kbd>C</kbd></button>
+      <button class="btn btn-hud" id="d-exit"><span data-i18n="panel.back"></span></button>
+    </div>
+    <div class="hud hud-telemetry">
+      <div class="gauge wide">
+        <span class="g-label" data-i18n="drive.battery"></span>
+        <span class="g-value"><b id="h-battery">100</b> %</span>
+        <span class="g-bar"><i id="h-battery-bar"></i></span>
+      </div>
+      <div class="gauge wide">
+        <span class="g-label" data-i18n="drive.speed"></span>
+        <span class="g-value"><b id="h-speed">0.0</b> cm/s</span>
+        <span class="g-bar"><i id="h-speed-bar"></i></span>
+      </div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.solar"></span><span class="g-value"><b id="h-solar">645</b> Wh</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.tau"></span><span class="g-value">τ <b id="h-tau">0.6</b></span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.temp"></span><span class="g-value"><b id="h-temp">-28</b> °C</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="h-heading">000° N</b></span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.trip"></span><span class="g-value"><b id="h-trip">0.0</b> m</span></div>
+    </div>
+    <p class="drive-help hidden" id="drive-help" data-i18n="drive.help"></p>
+    <div class="touch-pad" aria-hidden="true">
+      <button data-axis="turn" data-v="1">◀</button>
+      <div class="touch-col">
+        <button data-axis="fwd" data-v="1">▲</button>
+        <button data-axis="fwd" data-v="-1">▼</button>
+      </div>
+      <button data-axis="turn" data-v="-1">▶</button>
+    </div>
+  </div>
+  <div id="fade" class="fade"><p id="fade-text"></p></div>
+
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand"><span class="brand-dot"></span><span data-i18n="title.top"></span>&nbsp;<em data-i18n="title.bottom"></em></div>
@@ -60,9 +100,13 @@
       <div><dt data-i18n="panel.distance"></dt><dd id="p-distance"></dd></div>
     </dl>
     <div class="actions">
-      <button class="btn btn-primary" id="p-drive" disabled><span data-i18n="panel.drive"></span></button>
-      <button class="btn btn-ghost" id="p-story" disabled><span data-i18n="panel.soon"></span></button>
+      <button class="btn btn-primary" id="p-drive"><span data-i18n="panel.drive"></span></button>
     </div>
+    <section class="story">
+      <p class="eyebrow" data-i18n="panel.storyTitle"></p>
+      <ol id="p-story" class="timeline"></ol>
+      <blockquote id="p-closing"></blockquote>
+    </section>
   </aside>
 
   <footer class="credit" data-i18n="credit"></footer>

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { Globe } from './globe.js';
+import { DriveSim } from './drive.js';
 import { ROVERS } from './data.js';
+import { STORIES } from './stories.js';
 import { t, getLang, setLang, onLangChange, applyI18n } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -25,8 +27,9 @@ globe.load().then(() => {
   start.classList.add('ready');
   // Deep link: index.html#opportunity skips the intro and opens that rover
   const linked = ROVERS.find((r) => r.id === location.hash.slice(1));
-  if (location.hash === '#mars' || linked) enter();
+  if (location.hash === '#mars' || location.hash === '#drive' || linked) enter();
   if (linked) openRover(linked);
+  if (location.hash === '#drive') startDrive();
 }).catch((err) => {
   console.error(err);
   $('start').querySelector('.loader-text').textContent = 'Model failed to load — run: python server.py';
@@ -57,12 +60,26 @@ function fillPanel(rover) {
   $('p-lasted').textContent = `${fmtNum(s.lasted)} ${unit}`;
   $('p-distance').textContent = s.distanceKm < 1 ? `~${Math.round(s.distanceKm * 1000)} m` : `${fmtNum(s.distanceKm)} km`;
   $('p-drive').hidden = !rover.playable;
+
+  const story = STORIES[rover.id][getLang()];
+  const list = $('p-story');
+  list.replaceChildren(...story.chapters.map((c) => {
+    const li = document.createElement('li');
+    const when = document.createElement('time');
+    const title = document.createElement('h3');
+    const text = document.createElement('p');
+    when.textContent = c.when; title.textContent = c.title; text.textContent = c.text;
+    li.append(when, title, text);
+    return li;
+  }));
+  $('p-closing').textContent = story.closing;
   panel.style.setProperty('--c', rover.color);
 }
 
 function openRover(rover) {
   selected = rover;
   fillPanel(rover);
+  panel.scrollTop = 0;
   panel.classList.add('open');
   panel.setAttribute('aria-hidden', 'false');
   globe.setSelected(rover.id);
@@ -78,7 +95,7 @@ function closePanel() {
 }
 
 $('panel-close').addEventListener('click', closePanel);
-window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && selected) closePanel(); });
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && selected && !drive.running) closePanel(); });
 
 onLangChange(() => {
   globe.updateMarkerLabels((r) => t(`${r.id}.place`));
@@ -86,11 +103,75 @@ onLangChange(() => {
 });
 applyI18n();
 
+// ---------- Drive ----------
+const fade = $('fade');
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const drive = new DriveSim($('drive'), {
+  speed: $('h-speed'), speedBar: $('h-speed-bar'), heading: $('h-heading'), trip: $('h-trip'),
+  battery: $('h-battery'), batteryBar: $('h-battery-bar'), solar: $('h-solar'), tau: $('h-tau'), temp: $('h-temp'),
+});
+let switching = false;
+
+async function fadeTo(text) {
+  $('fade-text').textContent = text || '';
+  fade.classList.add('on');
+  await wait(900);
+}
+
+async function startDrive() {
+  if (switching || drive.running) return;
+  switching = true;
+  try {
+    await fadeTo(t('drive.loading'));
+    await drive.load();
+    globe.setActive(false);
+    document.body.classList.add('driving');
+    drive.start();
+    if (new URLSearchParams(location.search).get('cam') === 'chase') drive.toggleView();
+    $('fade-text').textContent = t('drive.card');
+    await wait(2600);
+    fade.classList.remove('on');
+    $('drive-help').classList.remove('hidden');
+    setTimeout(() => $('drive-help').classList.add('hidden'), 9000);
+  } catch (err) {
+    console.error(err);
+    $('fade-text').textContent = 'Rover model failed to load.';
+    await wait(2000);
+    fade.classList.remove('on');
+  } finally {
+    switching = false;
+  }
+}
+
+async function stopDrive() {
+  if (switching || !drive.running) return;
+  switching = true;
+  await fadeTo('');
+  drive.stop();
+  document.body.classList.remove('driving');
+  globe.setActive(true);
+  globe.resize();
+  fade.classList.remove('on');
+  switching = false;
+}
+
+$('p-drive').addEventListener('click', startDrive);
+$('d-exit').addEventListener('click', stopDrive);
+$('d-view').addEventListener('click', () => drive.toggleView());
+document.querySelectorAll('.touch-pad button').forEach((b) => {
+  const set = (v) => (e) => { e.preventDefault(); drive.setTouch(b.dataset.axis, v); };
+  b.addEventListener('pointerdown', set(Number(b.dataset.v)));
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => b.addEventListener(ev, set(0)));
+});
+
+window.__app = { globe, drive }; // handy in the browser console
+
 // ---------- Loop ----------
 const clock = new THREE.Clock();
 function loop() {
   const dt = Math.min(clock.getDelta(), 0.05);
   globe.update(dt);
+  drive.update(dt);
   requestAnimationFrame(loop);
 }
 loop();

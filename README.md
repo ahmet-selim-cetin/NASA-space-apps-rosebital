@@ -19,13 +19,18 @@ Then open http://localhost:8000
   https://trek.nasa.gov/mars/
 
 ### Mission data
-- **Opportunity** — NASA Science mission page: https://science.nasa.gov/mission/mer-opportunity/
+- **Opportunity & Spirit** — NASA Science, Mars Exploration Rovers: https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/
+  Opportunity page: https://science.nasa.gov/mission/mer-opportunity/ · Spirit page: https://science.nasa.gov/mission/mer-spirit/
   JPL news release, 13 Feb 2019: https://www.jpl.nasa.gov/news/nasas-opportunity-rover-mission-on-mars-comes-to-end/
-- **Spirit** — NASA Science mission page: https://science.nasa.gov/mission/mer-spirit/
-- **Sojourner / Mars Pathfinder** — NASA Science mission page: https://science.nasa.gov/mission/mars-pathfinder/
-- **Ingenuity** — NASA Science helicopter page: https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/
+  Coordinates (NAIF / PDS mission catalog): https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/catalog/mission.cat
+- **Sojourner / Mars Pathfinder** — NASA Science: https://science.nasa.gov/mission/mars-pathfinder/
+  Landing site: https://mars.nasa.gov/internal_resources/815/
+- **Ingenuity** — NASA Science: https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/
   JPL news release, 25 Jan 2024: https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
+  Flight log and positions: https://en.wikipedia.org/wiki/List_of_Ingenuity_flights
 
 ### 3D models
-- `models/nasa_opportunity_rover.glb` — NASA Opportunity rover model (Sketchfab export).
-- `models/Mars(yeni).glb` — stylised Mars sculpt by Team Rosebital.
+- Opportunity / Spirit — NASA 3D Resources: https://science.nasa.gov/3d-resources/mars-exploration-rover-spirit-and-opportunity/
+- Ingenuity — NASA 3D Resources: https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/
+- Sojourner — Sketchfab: https://sketchfab.com/3d-models/sojourner-mars-rover-7f135874ddd34f8f98904b53a2c178e1
+- `models/Mars(yeni).glb` — stylised Mars sculpt by Team Rosebital (not used on the globe; the globe uses the NASA map above).
