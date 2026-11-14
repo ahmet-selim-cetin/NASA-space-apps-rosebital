@@ -34,9 +34,9 @@ Battery, solar-power and temperature values in the game are illustrations; the d
 
 ### The story / Hikâye
 
-The Spirit, Opportunity and Ingenuity stories were written by **Team Rosebital** in Turkish and translated into English.
+The Spirit, Opportunity, Sojourner and Ingenuity stories were written by **Team Rosebital** in Turkish and translated into English.
 Their facts were checked against the NASA / JPL sources below.
-*Spirit, Opportunity ve Ingenuity hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
+*Spirit, Opportunity, Sojourner ve Ingenuity hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
 
 ### Built with / Kullanılan teknolojiler
 
@@ -55,6 +55,7 @@ js/drive.js         first-person drive and dust storm
 js/audio.js         wind sound
 js/data.js          mission numbers and coordinates
 js/twins.js         Spirit & Opportunity story (Team Rosebital)
+js/sojourner.js     Sojourner story (Team Rosebital)
 js/ingenuity.js     Ingenuity story (Team Rosebital)
 js/stories.js       stories for all rovers
 js/slides.js        3-slide picture stories

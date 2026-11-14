@@ -1,6 +1,6 @@
 // Three-slide picture story shown when a beacon is clicked: beginning → big discovery → goodbye.
 // Images: NASA Image and Video Library / JPL Photojournal (public domain NASA imagery, credits below).
-// Spirit & Opportunity texts are shortened from Team Rosebital's own story (twins.js).
+// Slide texts are shortened from Team Rosebital's own stories (twins.js, sojourner.js, ingenuity.js).
 export const SLIDES = {
   opportunity: [
     {
@@ -41,18 +41,18 @@ export const SLIDES = {
   sojourner: [
     {
       img: 'img/slides/sojourner-1.jpg', credit: 'NASA/JPL · PIA00611',
-      tr: { when: '4 Temmuz 1997', title: 'Mars\'a sekerek iniş', text: 'Mars Pathfinder hava yastıklarıyla sekerek Mars\'a indi. Üzerinde mikrodalga fırın büyüklüğünde küçük bir gezgin vardı: Sojourner.', cap: 'İnişten hemen sonra: iniş aracının üzerinde Sojourner' },
-      en: { when: 'July 4, 1997', title: 'Bouncing onto Mars', text: 'Mars Pathfinder bounced down onto Mars on airbags. On board was a little rover the size of a microwave oven: Sojourner.', cap: 'Just after landing: Sojourner on top of the lander' },
+      tr: { when: "4 Temmuz 1997", title: "Zıplaya zıplaya Mars'a", text: "Adı bir yarışmayla seçildi: \"Sojourner\", yani \"yolcu\". 4 Temmuz 1997'de dev hava yastıklarıyla yaklaşık 15 kez zıplayıp Ares Vallis'e indi.", cap: 'İnişten hemen sonra: iniş aracının üzerinde Sojourner' },
+      en: { when: "July 4, 1997", title: "Bouncing onto Mars", text: "Its name, \"Sojourner\", means \"traveller\". On July 4, 1997 it bounced about 15 times on giant airbags and landed in Ares Vallis.", cap: 'Just after landing: Sojourner on top of the lander' },
     },
     {
       img: 'img/slides/sojourner-2.jpg', credit: 'NASA/JPL · PIA00664',
-      tr: { when: 'Temmuz 1997', title: 'İlk tekerlek izleri', text: 'Sojourner başka bir gezegende yol alan ilk tekerlekli araç oldu. Bir hafta dayanması bekleniyordu; 83 gün çalıştı.', cap: 'Sojourner\'ın Mars toprağında bıraktığı ilk izler' },
-      en: { when: 'July 1997', title: 'The first wheel tracks', text: 'Sojourner became the first wheeled vehicle to drive on another planet. It was expected to last a week. It worked for 83 days.', cap: 'Sojourner\'s first tracks in the Martian soil' },
+      tr: { when: "Temmuz 1997", title: "İlk tekerlekler", text: "Ertesi gün rampadan indi ve başka bir gezegende yol alan ilk tekerlekli araç oldu. Sadece 7 gün çalışması gerekiyordu; 83 gün çalıştı!", cap: 'Sojourner\'ın Mars toprağında bıraktığı ilk izler' },
+      en: { when: "July 1997", title: "The first wheels", text: "The next day it rolled down a ramp and became the first wheeled vehicle to drive on another planet. It only had to work for 7 days. It worked for 83!", cap: 'Sojourner\'s first tracks in the Martian soil' },
     },
     {
       img: 'img/slides/sojourner-3.jpg', credit: 'NASA/JPL · PIA01238',
-      tr: { when: '27 Eylül 1997', title: 'Ses kesildi', text: 'Sojourner Dünya ile yalnızca iniş aracı üzerinden konuşabiliyordu. 27 Eylül\'de iniş aracı sustu ve küçük gezginden bir daha haber alınamadı.', cap: 'Sojourner\'ın iniş aracının çevresinde izlediği yol' },
-      en: { when: 'September 27, 1997', title: 'The voice went quiet', text: 'Sojourner could only talk to Earth through its lander. On September 27 the lander fell silent, and the little rover was never heard from again.', cap: 'The path Sojourner drove around its lander' },
+      tr: { when: "27 Eylül 1997", title: "Bağlantı koptu", text: "Sojourner Dünya'ya yalnızca Pathfinder üzerinden ulaşabiliyordu. Pathfinder susunca onun sesi de kesildi. Hâlâ Ares Vallis'in toprağında duruyor.", cap: 'Sojourner\'ın iniş aracının çevresinde izlediği yol' },
+      en: { when: "September 27, 1997", title: "The link was lost", text: "Sojourner could only reach Earth through Pathfinder. When Pathfinder fell silent, so did Sojourner. It still stands on the ground of Ares Vallis.", cap: 'The path Sojourner drove around its lander' },
     },
   ],
 
