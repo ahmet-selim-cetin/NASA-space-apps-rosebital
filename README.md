@@ -69,7 +69,8 @@ assets/             team logo (SVG), tab icon
 fonts/              title font "Hacked"
 favicon.ico         tab icon (fallback)
 textures/           NASA Mars map
-models/             3D models
+models/             3D models (models/terrain/ = baked drive ground)
+tools/              bake-terrain.mjs: turns the terrain model into game files
 ```
 
 ## Run locally / Yerelde çalıştırma
@@ -156,3 +157,4 @@ https://docs.google.com/spreadsheets/d/1B27CVgnJ7uxL9cvEWX8QfvTVxY87lROzzPXS3N42
 - Ingenuity — NASA 3D Resources: https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/
 - Sojourner — Sketchfab: https://sketchfab.com/3d-models/sojourner-mars-rover-7f135874ddd34f8f98904b53a2c178e1
 - `models/Mars(yeni).glb` — stylised Mars sculpt by Team Rosebital (not used on the globe; the globe uses the NASA map above).
+- Opportunity drive ground — `models/Mars - Opportunity Yolu.glb`, a terrain sculpted by Team Rosebital (one tile, ~141 × 143 m, 11.5 MB). The game does not load the GLB itself: `tools/bake-terrain.mjs` bakes it into `models/terrain/` (`height.bin` 1 m height grid, `color.png` colours from the model, `terrain.json` size/scale), which is much smaller and also gives the rover its ground height. The outer 8 m of the model is trimmed because its edge is stretched. To rebuild after the model changes: `node tools/bake-terrain.mjs "models/Mars - Opportunity Yolu.glb" models/terrain 8`. The rover is kept inside the terrain (8 m margin), cannot climb slopes steeper than ~32°, and beyond the edge the ground fades into generated hills for the horizon. (The tool also joins multi-tile models, as it did for an earlier "Spirit Yolu" terrain.)

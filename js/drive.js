@@ -4,7 +4,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const ROVER_URL = 'models/nasa_opportunity_rover.glb';
 const ROVER_HEIGHT = 1.55; // metres, wheels to top of the camera mast
 const WORLD_SIZE = 700; // metres
-const WORLD_LIMIT = 300; // the rover is turned back beyond this radius
+// The team's sculpted ground ("Mars - Spirit Yolu (part 4)"), baked by tools/bake-terrain.mjs into a height grid + colour map.
+const TERRAIN_URL = 'models/terrain/';
+const EDGE_MARGIN = 8; // metres; the rover is turned back this far inside the edge of the team's terrain
+const EDGE_BLEND = 45; // metres; outside the terrain the ground eases into generated hills for the horizon
+const MAX_GRADE = 0.62; // rise/run the rover can climb (~32°); steeper ground stops it
 const MAX_SPEED = 1.6; // scene m/s (time-compressed; the real rover's top speed was 5 cm/s)
 const REAL_TOP_SPEED_CM = 5;
 const TRACK_SPACING = 0.22;
@@ -57,7 +61,59 @@ const CRATERS = [
   { x: -70, z: 120, r: 9, depth: 1.1 },
 ];
 
+// Height grid of the team's terrain, centred on the origin. null until loaded.
+let field = null;
+
+async function loadField() {
+  const meta = await (await fetch(`${TERRAIN_URL}terrain.json`)).json();
+  const raw = new Uint16Array(await (await fetch(`${TERRAIN_URL}height.bin`)).arrayBuffer());
+  const h = new Float32Array(raw.length);
+  for (let i = 0; i < raw.length; i++) h[i] = meta.hmin + (raw[i] / 65535) * (meta.hmax - meta.hmin);
+  const img = new Image();
+  img.src = `${TERRAIN_URL}color.png`;
+  await img.decode();
+  const c = document.createElement('canvas');
+  c.width = img.width; c.height = img.height;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const color = ctx.getImageData(0, 0, c.width, c.height);
+  field = { ...meta, h, color, halfW: meta.width / 2, halfD: meta.depth / 2 };
+}
+
+function fieldHeight(x, z) {
+  const f = field;
+  const gx = THREE.MathUtils.clamp((x + f.halfW) / f.cell, 0, f.nx - 1.0001);
+  const gz = THREE.MathUtils.clamp((z + f.halfD) / f.cell, 0, f.nz - 1.0001);
+  const ix = Math.floor(gx), iz = Math.floor(gz), u = gx - ix, v = gz - iz;
+  const i = iz * f.nx + ix;
+  const a = f.h[i], b = f.h[i + 1], c = f.h[i + f.nx], d = f.h[i + f.nx + 1];
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+
+// Surface colour (linear RGB) of the team's terrain at a point.
+function fieldColor(x, z, out) {
+  const f = field, cc = f.color;
+  const gx = THREE.MathUtils.clamp(Math.round(((x + f.halfW) / f.width) * (cc.width - 1)), 0, cc.width - 1);
+  const gz = THREE.MathUtils.clamp(Math.round(((z + f.halfD) / f.depth) * (cc.height - 1)), 0, cc.height - 1);
+  const i = (gz * cc.width + gx) * 4;
+  return out.setRGB(cc.data[i] / 255, cc.data[i + 1] / 255, cc.data[i + 2] / 255, THREE.SRGBColorSpace);
+}
+
+// Distance (m) outside the team's terrain; 0 inside.
+function outside(x, z) {
+  if (!field) return 0;
+  const dx = Math.max(0, Math.abs(x) - field.halfW), dz = Math.max(0, Math.abs(z) - field.halfD);
+  return Math.hypot(dx, dz);
+}
+
 export function terrainHeight(x, z) {
+  if (!field) return generatedHeight(x, z);
+  const o = outside(x, z);
+  if (o <= 0) return fieldHeight(x, z);
+  return THREE.MathUtils.lerp(fieldHeight(x, z), generatedHeight(x, z), ramp(0, EDGE_BLEND, o));
+}
+
+function generatedHeight(x, z) {
   let h = (fbm(x * 0.004 + 11.3, z * 0.004 + 4.7) - 0.5) * 9; // broad swells
   h += (fbm(x * 0.045, z * 0.045, 3) - 0.5) * 0.5; // lumps
   // wind ripples, stronger in patches
@@ -173,6 +229,7 @@ export class DriveSim {
     this.#initRenderer();
     this.#buildSky();
     this.#buildLights();
+    await loadField();
     this.#buildTerrain();
     this.#buildRocks();
     this.#buildTracks();
@@ -239,8 +296,18 @@ export class DriveSim {
     const dx = -Math.sin(s.heading) * s.speed * dt;
     const dz = -Math.cos(s.heading) * s.speed * dt;
     let nx = s.x + dx, nz = s.z + dz;
-    const r = Math.hypot(nx, nz);
-    if (r > WORLD_LIMIT) { nx *= WORLD_LIMIT / r; nz *= WORLD_LIMIT / r; s.speed *= 0.9; }
+    // stay on the team's terrain
+    const lx = field.halfW - EDGE_MARGIN, lz = field.halfD - EDGE_MARGIN;
+    if (Math.abs(nx) > lx || Math.abs(nz) > lz) {
+      nx = THREE.MathUtils.clamp(nx, -lx, lx); nz = THREE.MathUtils.clamp(nz, -lz, lz); s.speed *= 0.9;
+    }
+    // too steep to climb (crater walls, the big rock): stop at the foot of the slope
+    const step = Math.hypot(dx, dz);
+    if (step > 1e-5) {
+      const look = 1.2 * Math.sign(s.speed);
+      const ax = s.x - Math.sin(s.heading) * look, az = s.z - Math.cos(s.heading) * look;
+      if ((terrainHeight(ax, az) - terrainHeight(s.x, s.z)) / 1.2 > MAX_GRADE) { nx = s.x; nz = s.z; s.speed *= 0.5; }
+    }
     const p = { x: nx, z: nz };
     if (this.#collideBoulders(p)) { nx = p.x; nz = p.z; s.speed *= 0.6; }
     s.trip += Math.hypot(nx - s.x, nz - s.z);
@@ -339,27 +406,55 @@ export class DriveSim {
     this.scene.add(this.sun, this.sun.target);
   }
 
+  // Two pieces of ground: the team's terrain at 1 m detail, and a coarser ring of generated hills around it
+  // that starts at the terrain's edge height and fades to the horizon.
   #buildTerrain() {
-    const seg = 320;
-    const geo = new THREE.PlaneGeometry(WORLD_SIZE, WORLD_SIZE, seg, seg);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position;
-    const colors = new Float32Array(pos.count * 3);
-    const dark = new THREE.Color(0x6e4329), light = new THREE.Color(0xb98358), c = new THREE.Color();
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i), z = pos.getZ(i);
-      pos.setY(i, terrainHeight(x, z));
-      const t = THREE.MathUtils.clamp(fbm(x * 0.02 + 7, z * 0.02 + 3, 3) * 1.5 - 0.3, 0, 1);
-      c.copy(dark).lerp(light, t);
-      colors.set([c.r, c.g, c.b], i * 3);
-    }
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geo.computeVertexNormals();
     const tex = makeGroundTexture();
-    this.groundMat = new THREE.MeshStandardMaterial({ map: tex, bumpMap: tex, bumpScale: 0.6, vertexColors: true, roughness: 1, metalness: 0 });
-    this.ground = new THREE.Mesh(geo, this.groundMat);
-    this.ground.receiveShadow = true;
-    this.scene.add(this.ground);
+    // the grain texture averages ~0.83, so lift the model's colours to keep their brightness
+    const lift = 1.15;
+    const dark = new THREE.Color(0x6e4329), light = new THREE.Color(0xb98358), c = new THREE.Color(), edge = new THREE.Color();
+
+    const build = (w, d, sx, sz) => {
+      // same grain size (one tile per 5 m) on both pieces
+      const grain = tex.clone();
+      grain.repeat.set(w / 5, d / 5);
+      const mat = new THREE.MeshStandardMaterial({ map: grain, bumpMap: grain, bumpScale: 0.6, vertexColors: true, roughness: 1, metalness: 0 });
+      const geo = new THREE.PlaneGeometry(w, d, sx, sz);
+      geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position;
+      const colors = new Float32Array(pos.count * 3);
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), z = pos.getZ(i);
+        pos.setY(i, terrainHeight(x, z));
+        const o = outside(x, z);
+        fieldColor(x, z, edge).multiplyScalar(lift);
+        if (o > 0) {
+          const t = THREE.MathUtils.clamp(fbm(x * 0.02 + 7, z * 0.02 + 3, 3) * 1.5 - 0.3, 0, 1);
+          c.copy(dark).lerp(light, t).lerp(edge, 1 - ramp(0, EDGE_BLEND, o));
+        } else c.copy(edge);
+        colors.set([c.r, c.g, c.b], i * 3);
+      }
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.receiveShadow = true;
+      this.scene.add(mesh);
+      return mesh;
+    };
+
+    const f = field;
+    this.ground = build(f.width, f.depth, f.nx - 1, f.nz - 1);
+    const ring = build(WORLD_SIZE, WORLD_SIZE, 320, 320);
+    // keep a ring triangle if any corner is outside the terrain (a thin overlap hides the joint)
+    const p = ring.geometry.attributes.position;
+    const idx = ring.geometry.index.array, out = [];
+    for (let t = 0; t < idx.length; t += 3) {
+      if ([idx[t], idx[t + 1], idx[t + 2]].some((v) => outside(p.getX(v), p.getZ(v)) > 0)) out.push(idx[t], idx[t + 1], idx[t + 2]);
+    }
+    ring.geometry.setIndex(out);
+    // sit the ring a hair lower so it never pokes through the detailed ground where they overlap
+    ring.position.y = -0.03;
+    this.groundRing = ring;
   }
 
   #buildRocks() {
@@ -384,6 +479,9 @@ export class DriveSim {
       const x = Math.cos(ang) * rad, z = Math.sin(ang) * rad;
       const big = rad > 30 && hash(i, 5.5) > 0.975;
       const size = big ? 0.35 + hash(i, 3.1) * 0.6 : 0.03 + hash(i, 3.1) ** 2 * 0.2;
+      // no rocks hanging on steep walls
+      const grade = Math.hypot(terrainHeight(x + 0.5, z) - terrainHeight(x - 0.5, z), terrainHeight(x, z + 0.5) - terrainHeight(x, z - 0.5));
+      if (grade > 0.8) { this.rocks.setMatrixAt(i, m.makeScale(0, 0, 0)); continue; }
       t.set(x, terrainHeight(x, z) + size * 0.15, z);
       e.set(hash(i, 2.2) * 6.28, hash(i, 4.4) * 6.28, hash(i, 6.6) * 6.28);
       q.setFromEuler(e);

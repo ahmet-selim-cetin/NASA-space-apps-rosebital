@@ -1,0 +1,15 @@
+{
+ "source": "Mars - Opportunity Yolu.glb",
+ "width": 131,
+ "depth": 133,
+ "nx": 132,
+ "nz": 134,
+ "cell": 1,
+ "hmin": -3.3224,
+ "hmax": 2.4439,
+ "color": {
+  "nx": 263,
+  "nz": 267,
+  "cell": 0.5
+ }
+}
