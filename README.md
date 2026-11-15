@@ -129,6 +129,21 @@ All images are NASA imagery from the NASA Image and Video Library (https://image
 | Moon 1 | Surveyor 3 footpad and soil sampler, Apollo 12 EVA-2 — https://images.nasa.gov/details/as12-48-7110 | NASA |
 | Moon 2 | Two U.S. spacecraft on the Moon: Surveyor 3 and the Apollo 12 LM — https://images.nasa.gov/details/AS12-48-7134 | NASA |
 | Moon 3 | View of Surveyor III in its crater — https://images.nasa.gov/details/as12-48-7121 | NASA |
+| Viking 1, 1 | First Photograph Taken On Mars Surface (July 20, 1976) — https://photojournal.jpl.nasa.gov/catalog/PIA00381 | NASA/JPL |
+| Viking 1, 2 | First Panoramic View From The Surface Of Mars — https://photojournal.jpl.nasa.gov/catalog/PIA00382 | NASA/JPL |
+| Viking 1, 3 | Viking Lander 1 U.S. Flag on Mars Surface — https://photojournal.jpl.nasa.gov/catalog/PIA00565 | NASA/JPL |
+| Viking 2, 1 | Viking Lander 2 First Picture On The Surface Of Mars — https://photojournal.jpl.nasa.gov/catalog/PIA00396 | NASA/JPL |
+| Viking 2, 2 | Frost at the Viking Lander 2 Site — https://photojournal.jpl.nasa.gov/catalog/PIA00573 | NASA/JPL |
+| Viking 2, 3 | Viking Lander 2 Anniversary (Mars Odyssey THEMIS) — https://photojournal.jpl.nasa.gov/catalog/PIA04023 | NASA |
+| InSight 1 | InSight Images a Solar Panel — https://photojournal.jpl.nasa.gov/catalog/PIA22736 | NASA/JPL-Caltech |
+| InSight 2 | SEIS Deployed on Mars — https://photojournal.jpl.nasa.gov/catalog/PIA22956 | NASA/JPL-Caltech |
+| InSight 3 | InSight's Final Selfie — https://photojournal.jpl.nasa.gov/catalog/PIA25287 | NASA/JPL-Caltech |
+| Apollo 11, 1 | Apollo 11 launch (Saturn Apollo Program, 6900540) — https://images.nasa.gov/details/6900540 | NASA |
+| Apollo 11, 2 | Astronaut Edwin Aldrin walks on lunar surface near leg of Lunar Module — https://images.nasa.gov/details/as11-40-5903 | NASA |
+| Apollo 11, 3 | View of plaque Apollo 11 astronauts left on moon — https://images.nasa.gov/details/as11-40-5899 | NASA |
+| Apollo 15, 1 | Panoramic view north of Station 1, northwest of Hadley Rille — https://images.nasa.gov/details/as15-85-11425 | NASA |
+| Apollo 15, 2 | Astronaut David Scott on slope of Hadley Delta during Apollo 15 EVA — https://images.nasa.gov/details/as15-85-11437 | NASA |
+| Apollo 15, 3 | Astronaut James Irwin gives salute beside U.S. flag during EVA — https://images.nasa.gov/details/as15-88-11866 | NASA |
 
 ### Moon / Ay
 - Moon map: texture taken from `models/moon (1).glb` — "moon" by RenderX on Sketchfab, licensed CC BY 4.0: https://sketchfab.com/3d-models/moon-26cc0b7878bb4d919b68e2be399db466 (flipped north-up and resized to `textures/moon_4k.jpg`).
@@ -143,8 +158,15 @@ The side panel shows the landing-site coordinates exactly as printed on these pa
 - **Ingenuity** — first airfield, Wright Brothers Field, 18°26′41″ N 77°27′04″ E — Wikipedia, List of Ingenuity flights: https://en.wikipedia.org/wiki/List_of_Ingenuity_flights (no NASA page with coordinates was found). Its final resting place, Airfield Chi (flight 72), is on the same page: 18°29′50″ N 77°19′21″ E
 - **Surveyor 3** — 3.0162° S, 336.582° E (found from Lunar Reconnaissance Orbiter images) — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1967-035A
 - **Apollo 12** — lunar module, 3.0128° S, 23.4219° W — NASA NSSDCA lunar sites: https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html
+- **Viking 1** — 22.483° N, 47.94° W (312.06° E) — NASA Science: https://science.nasa.gov/mission/viking-1/ (landing July 20, 1976; lander stopped November 11, 1982 after a faulty command from Earth)
+- **Viking 2** — 47.6673° N, 134.2809° E — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C (landing September 3, 1976; turned off April 11, 1980 when its batteries failed, after 1,281 Mars days). Other pages give slightly different values (NASA Science: 47.64° N, 134.29° E).
+- **InSight** — 4.5° N, 135.9° E — NASA Science: https://science.nasa.gov/mission/insight/ (landing November 26, 2018; end December 15, 2022; dust on the solar panels: https://www.dlr.de/en/latest/news/2022/04/insight-mission-ends)
+- **Apollo 11** — lunar module, 0.67416° N, 23.47314° E — NASA NSSDCA lunar sites: https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html (mission length 8 d 3 h 18 min 35 s: https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm)
+- **Apollo 15** — lunar module, 26.13239° N, 3.63330° E — NASA NSSDCA lunar sites (same page). The team sheet's 26°06′04″ N, 3°39′10″ E differs, so the NSSDCA value was used.
 
-Where the team's source sheet differed from the page it cites (Sojourner, Surveyor 3, small rounding for Apollo 12 and Ingenuity), the value printed on the cited page was used.
+Where the team's source sheet differed from the page it cites (Sojourner, Surveyor 3, Viking 1, Apollo 15, small rounding for Apollo 12 and Ingenuity), the value printed on the cited page was used. Masses on the sheet (Viking, InSight, Apollo 11 and 15) are not shown, because it is unclear what they measure.
+
+The Viking 1, Viking 2, InSight, Apollo 11 and Apollo 15 stories are placeholders until Team Rosebital writes them (`js/stories.js`, `js/slides.js`).
 
 ### Fonts and logo / Yazı tipleri ve logo
 - **Hacked** (intro title) — by David Libeau, licensed CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 · `fonts/hacked-font/`

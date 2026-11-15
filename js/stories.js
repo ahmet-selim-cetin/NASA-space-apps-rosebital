@@ -6,7 +6,19 @@ import { INGENUITY } from './ingenuity.js';
 import { SOJOURNER } from './sojourner.js';
 import { APOLLO12 } from './moon.js';
 
+// Placeholder until Team Rosebital's story arrives; replace with its own file (like sojourner.js).
+const pending = {
+  tr: { chapters: [{ when: '—', title: 'Hikâye yolda', text: 'Bu hikâye Rosebital Takımı tarafından yazılacak.' }], closing: 'Yakında…' },
+  en: { chapters: [{ when: '—', title: 'Story on the way', text: 'This story will be written by Team Rosebital.' }], closing: 'Coming soon…' },
+};
+
 export const STORIES = {
+  viking1: pending,
+  viking2: pending,
+  insight: pending,
+  apollo11: pending,
+  apollo15: pending,
+
   ...TWINS, // Spirit & Opportunity: the team's own story, see twins.js
 
   sojourner: SOJOURNER, // the team's own story, see sojourner.js

@@ -1,6 +1,9 @@
 // Three-slide picture story shown when a beacon is clicked: beginning → big discovery → goodbye.
 // Images: NASA Image and Video Library / JPL Photojournal (public domain NASA imagery, credits below).
 // Slide texts are shortened from Team Rosebital's own stories (twins.js, sojourner.js, ingenuity.js).
+// Placeholder slide text until the team's story arrives.
+const PENDING = { tr: 'Bu hikâye Rosebital Takımı tarafından yazılacak.', en: 'This story will be written by Team Rosebital.' };
+
 export const SLIDES = {
   opportunity: [
     {
@@ -90,6 +93,94 @@ export const SLIDES = {
       img: 'img/slides/apollo12-3.jpg', credit: 'NASA · AS12-48-7121',
       tr: { when: 'Bugün', title: 'Hâlâ orada', text: "Gövdesi Ay'da kaldı. İki buçuk yıl ziyaretçi bekledi. Ziyaretçi geldi, bir parçasını aldı, gitti. Surveyor 3 beklemeye devam ediyor.", cap: "Surveyor 3, Fırtınalar Okyanusu'ndaki küçük kraterinde" },
       en: { when: 'Today', title: 'Still there', text: 'Its body stayed on the Moon. For two and a half years it waited for a visitor. The visitor came, took a piece of it, and left. Surveyor 3 is still waiting.', cap: 'Surveyor 3 in its small crater in the Ocean of Storms' },
+    },
+  ],
+
+  // The five slide sets below keep a placeholder text until Team Rosebital's stories arrive.
+  // Dates and captions follow the NASA image pages named in each credit line (see README).
+  viking1: [
+    {
+      img: 'img/slides/viking1-1.jpg', credit: 'NASA/JPL · PIA00381',
+      tr: { when: '20 Temmuz 1976', title: "Mars'tan ilk fotoğraf", text: PENDING.tr, cap: "İnişten dakikalar sonra çekilen ilk fotoğraf: kayalar ve iniş aracının ayağı" },
+      en: { when: 'July 20, 1976', title: 'The first photo from Mars', text: PENDING.en, cap: "The first photo, taken minutes after landing: rocks and a footpad of the lander" },
+    },
+    {
+      img: 'img/slides/viking1-2.jpg', credit: 'NASA/JPL · PIA00382',
+      tr: { when: 'Temmuz 1976', title: 'İlk panorama', text: PENDING.tr, cap: "Viking 1'in ilk panoraması: antenler, kayalar ve ufuktaki yayla" },
+      en: { when: 'July 1976', title: 'The first panorama', text: PENDING.en, cap: "Viking 1's first panorama: antennas, rocks and a plateau on the horizon" },
+    },
+    {
+      img: 'img/slides/viking1-3.jpg', credit: 'NASA/JPL · PIA00565',
+      tr: { when: '11 Kasım 1982', title: 'Bağlantı koptu', text: PENDING.tr, cap: "Viking 1'in üzerindeki ABD bayrağı" },
+      en: { when: 'November 11, 1982', title: 'The link was lost', text: PENDING.en, cap: 'The U.S. flag on Viking 1' },
+    },
+  ],
+  viking2: [
+    {
+      img: 'img/slides/viking2-1.jpg', credit: 'NASA/JPL · PIA00396',
+      tr: { when: '3 Eylül 1976', title: "Utopia Planitia'ya iniş", text: PENDING.tr, cap: "Viking 2'nin yüzeyden çektiği ilk fotoğraf" },
+      en: { when: 'September 3, 1976', title: 'Landing in Utopia Planitia', text: PENDING.en, cap: "Viking 2's first picture from the surface" },
+    },
+    {
+      img: 'img/slides/viking2-2.jpg', credit: 'NASA/JPL · PIA00573',
+      tr: { when: 'İniş yerinde', title: 'Kırağı', text: PENDING.tr, cap: "Viking 2'nin iniş yerinde kırağı" },
+      en: { when: 'At the landing site', title: 'Frost', text: PENDING.en, cap: 'Frost at the Viking 2 landing site' },
+    },
+    {
+      img: 'img/slides/viking2-3.jpg', credit: 'NASA · PIA04023',
+      tr: { when: '11 Nisan 1980', title: 'Pil bitti', text: PENDING.tr, cap: "Viking 2'nin iniş yeri, Mars Odyssey'in kızılötesi görüntüsünde (X işareti)" },
+      en: { when: 'April 11, 1980', title: 'The battery ran out', text: PENDING.en, cap: "The Viking 2 landing site in a Mars Odyssey infrared image (marked X)" },
+    },
+  ],
+  insight: [
+    {
+      img: 'img/slides/insight-1.jpg', credit: 'NASA/JPL-Caltech · PIA22736',
+      tr: { when: '26 Kasım 2018', title: "Elysium Planitia'ya iniş", text: PENDING.tr, cap: "InSight'ın güneş panellerinden biri, Mars yüzeyinden görüntülendi" },
+      en: { when: 'November 26, 2018', title: 'Landing in Elysium Planitia', text: PENDING.en, cap: "One of InSight's solar panels, seen from the surface of Mars" },
+    },
+    {
+      img: 'img/slides/insight-2.jpg', credit: 'NASA/JPL-Caltech · PIA22956',
+      tr: { when: '19 Aralık 2018', title: 'Sismometre yere kondu', text: PENDING.tr, cap: 'Robot kol sismometreyi (SEIS) Mars yüzeyine yerleştirdi' },
+      en: { when: 'December 19, 2018', title: 'The seismometer touches down', text: PENDING.en, cap: "The robotic arm set the seismometer (SEIS) on the surface of Mars" },
+    },
+    {
+      img: 'img/slides/insight-3.jpg', credit: 'NASA/JPL-Caltech · PIA25287',
+      tr: { when: '15 Aralık 2022', title: 'Toza gömüldü', text: PENDING.tr, cap: "InSight'ın son özçekimi (24 Nisan 2022): toz güneş panellerini kapladı" },
+      en: { when: 'December 15, 2022', title: 'Buried in dust', text: PENDING.en, cap: "InSight's final selfie (April 24, 2022): dust covers its solar panels" },
+    },
+  ],
+  apollo11: [
+    {
+      img: 'img/slides/apollo11-1.jpg', credit: 'NASA · 6900540',
+      tr: { when: '16 Temmuz 1969', title: 'Fırlatma', text: PENDING.tr, cap: "Apollo 11'i taşıyan Saturn V roketi Kennedy Uzay Merkezi'nden havalanıyor" },
+      en: { when: 'July 16, 1969', title: 'Launch', text: PENDING.en, cap: 'The Saturn V rocket carrying Apollo 11 lifts off from Kennedy Space Center' },
+    },
+    {
+      img: 'img/slides/apollo11-2.jpg', credit: 'NASA · AS11-40-5903',
+      tr: { when: '20 Temmuz 1969', title: "Sükûnet Denizi'nde", text: PENDING.tr, cap: 'Buzz Aldrin, Eagle ay modülünün ayağının yanında; fotoğrafı Neil Armstrong çekti' },
+      en: { when: 'July 20, 1969', title: 'In the Sea of Tranquility', text: PENDING.en, cap: 'Buzz Aldrin beside a landing leg of the Eagle; Neil Armstrong took the photo' },
+    },
+    {
+      img: 'img/slides/apollo11-3.jpg', credit: 'NASA · AS11-40-5899',
+      tr: { when: '21 Temmuz 1969', title: 'Geride kalan plaket', text: PENDING.tr, cap: "Astronotların Ay'da bıraktığı plaket (ay modülünün inen kısmına tutturulmuş)" },
+      en: { when: 'July 21, 1969', title: 'The plaque left behind', text: PENDING.en, cap: 'The plaque the astronauts left on the Moon (attached to the lunar module descent stage)' },
+    },
+  ],
+  apollo15: [
+    {
+      img: 'img/slides/apollo15-1.jpg', credit: 'NASA · AS15-85-11425',
+      tr: { when: '30 Temmuz 1971', title: "Hadley Rille'in yanına iniş", text: PENDING.tr, cap: 'Hadley Rille manzarası, kuzeybatıya doğru (31 Temmuz 1971)' },
+      en: { when: 'July 30, 1971', title: 'Landing beside Hadley Rille', text: PENDING.en, cap: 'A view of Hadley Rille, looking northwest (July 31, 1971)' },
+    },
+    {
+      img: 'img/slides/apollo15-2.jpg', credit: 'NASA · AS15-85-11437',
+      tr: { when: '31 Temmuz 1971', title: "Ay'da ilk ay arabası", text: PENDING.tr, cap: 'David Scott, Hadley Delta yamacında; sağ önde ay arabası' },
+      en: { when: 'July 31, 1971', title: 'The first rover on the Moon', text: PENDING.en, cap: 'David Scott on the slope of Hadley Delta; the rover at right' },
+    },
+    {
+      img: 'img/slides/apollo15-3.jpg', credit: 'NASA · AS15-88-11866',
+      tr: { when: '1 Ağustos 1971', title: 'Bayrağın yanında', text: PENDING.tr, cap: 'James Irwin bayrağın yanında selam duruyor; arkada ay modülü ve ay arabası' },
+      en: { when: 'August 1, 1971', title: 'Beside the flag', text: PENDING.en, cap: 'James Irwin salutes beside the flag; the lunar module and rover behind' },
     },
   ],
 };

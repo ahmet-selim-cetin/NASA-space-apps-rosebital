@@ -168,6 +168,7 @@ function openRover(rover) {
   globe.setSelected(rover.id);
   globe.flyTo(rover);
   $('hint').classList.add('hidden');
+  if (!SLIDES[rover.id]) { showPanel(); return; } // no picture slides yet: open the panel directly
   openSlides(rover);
 }
 

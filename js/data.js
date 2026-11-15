@@ -65,6 +65,52 @@ export const ROVERS = [
       },
     ],
   },
+  // Landers with no driving: a facts list and one landing site each (values checked against NASA/NSSDCA pages, see README).
+  {
+    id: 'viking1',
+    name: 'Viking 1',
+    lat: 22.483,
+    lon: 312.06,
+    color: '#ff8a65',
+    playable: false,
+    sites: [
+      { labelKey: 'panel.coords', lat: ['22', '28', '58.80', 'N'], lon: ['47', '56', '24.00', 'W'], src: { name: 'NASA Science', url: 'https://science.nasa.gov/mission/viking-1/' } },
+    ],
+    facts: {
+      tr: [['İniş', '20 Temmuz 1976'], ['Son iletişim', '11 Kasım 1982']],
+      en: [['Landed', 'July 20, 1976'], ['Last contact', 'November 11, 1982']],
+    },
+  },
+  {
+    id: 'viking2',
+    name: 'Viking 2',
+    lat: 47.6673,
+    lon: 134.2809,
+    color: '#ffd166',
+    playable: false,
+    sites: [
+      { labelKey: 'panel.coords', lat: ['47', '40', '02.28', 'N'], lon: ['134', '16', '51.24', 'E'], src: { name: 'NSSDCA', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C' } },
+    ],
+    facts: {
+      tr: [['İniş', '3 Eylül 1976'], ['Son iletişim', '11 Nisan 1980']],
+      en: [['Landed', 'September 3, 1976'], ['Last contact', 'April 11, 1980']],
+    },
+  },
+  {
+    id: 'insight',
+    name: 'InSight',
+    lat: 4.5,
+    lon: 135.9,
+    color: '#f78fb3',
+    playable: false,
+    sites: [
+      { labelKey: 'panel.coords', lat: ['4', '30', '00.00', 'N'], lon: ['135', '54', '00.00', 'E'], src: { name: 'NASA Science', url: 'https://science.nasa.gov/mission/insight/' } },
+    ],
+    facts: {
+      tr: [['İniş', '26 Kasım 2018'], ['Son iletişim', '15 Aralık 2022']],
+      en: [['Landed', 'November 26, 2018'], ['Last contact', 'December 15, 2022']],
+    },
+  },
   // The Moon: Surveyor 3 and Apollo 12 landed about 180 m apart, so they share one beacon and one story.
   {
     id: 'apollo12',
@@ -81,6 +127,38 @@ export const ROVERS = [
     facts: {
       tr: [['Surveyor 3 inişi', '20 Nisan 1967'], ['Surveyor 3 son iletişim', '4 Mayıs 1967'], ['Apollo 12 inişi', '18 Kasım 1969'], ['Aradaki mesafe', '180 m'], ['Surveyor 3\'ün fotoğrafları', '6.326', true]],
       en: [['Surveyor 3 landed', 'April 20, 1967'], ['Surveyor 3 last contact', 'May 4, 1967'], ['Apollo 12 landed', 'November 18, 1969'], ['Distance apart', '180 m'], ['Photos by Surveyor 3', '6,326', true]],
+    },
+  },
+  {
+    id: 'apollo11',
+    world: 'moon',
+    name: 'Apollo 11',
+    lat: 0.67416,
+    lon: 23.47314,
+    color: '#ffe08a',
+    playable: false,
+    sites: [
+      { labelKey: 'panel.coords', lat: ['0', '40', '26.98', 'N'], lon: ['23', '28', '23.30', 'E'], src: { name: 'NSSDCA', url: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html' } },
+    ],
+    facts: {
+      tr: [['Fırlatma', '16 Temmuz 1969'], ['Ay\'a iniş', '20 Temmuz 1969'], ['Ay\'dan ayrılış', '21 Temmuz 1969'], ['Dünya\'ya dönüş', '24 Temmuz 1969'], ['Görev süresi', '8 gün 3 saat 18 dakika', true]],
+      en: [['Launched', 'July 16, 1969'], ['Landed on the Moon', 'July 20, 1969'], ['Left the Moon', 'July 21, 1969'], ['Back on Earth', 'July 24, 1969'], ['Mission length', '8 days 3 hours 18 minutes', true]],
+    },
+  },
+  {
+    id: 'apollo15',
+    world: 'moon',
+    name: 'Apollo 15',
+    lat: 26.13239,
+    lon: 3.6333,
+    color: '#9be7ff',
+    playable: false,
+    sites: [
+      { labelKey: 'panel.coords', lat: ['26', '07', '56.60', 'N'], lon: ['3', '37', '59.88', 'E'], src: { name: 'NSSDCA', url: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html' } },
+    ],
+    facts: {
+      tr: [['Fırlatma', '26 Temmuz 1971'], ['Ay\'a iniş', '30 Temmuz 1971'], ['Dünya\'ya dönüş', '7 Ağustos 1971'], ['Görev süresi', '12 gün 7 saat 12 dakika']],
+      en: [['Launched', 'July 26, 1971'], ['Landed on the Moon', 'July 30, 1971'], ['Back on Earth', 'August 7, 1971'], ['Mission length', '12 days 7 hours 12 minutes']],
     },
   },
 ];
