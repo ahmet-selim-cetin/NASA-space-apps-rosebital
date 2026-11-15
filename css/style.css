@@ -100,7 +100,7 @@ body.exploring .brand { opacity: 1; }
 .tagline { font-family: var(--serif); font-style: italic; font-size: 20px; line-height: 1.4; color: #e2d4c6; margin: 0 0 26px; }
 .stats { margin: 0 0 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .stats div { background: rgba(10, 6, 5, 0.85); padding: 12px 14px; }
-.stats div:last-child { grid-column: 1 / -1; }
+.stats div.wide { grid-column: 1 / -1; }
 .stats dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .stats dd { margin: 0; font-size: 15px; font-weight: 500; }
 .actions { display: flex; flex-direction: column; gap: 10px; }
@@ -388,3 +388,9 @@ body.driving .world-switch { display: none; }
 .credit-logo { height: 34px; width: auto; flex: none; }
 .intro:not(.gone) ~ .credit { visibility: hidden; }
 .ending-logo { position: absolute; left: 24px; bottom: 18px; width: 101px; height: auto; }
+
+/* ---------- Coordinates in the side panel ---------- */
+.stats dd.coord { line-height: 1.45; font-variant-numeric: tabular-nums; }
+.stats dd.coord small { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.stats dd.coord .coord-src { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 700; color: #e8b98f; text-underline-offset: 3px; text-decoration-color: rgba(232, 185, 143, 0.45); }
+.stats dd.coord .coord-src:hover, .stats dd.coord .coord-src:focus-visible { color: #ffd2a8; text-decoration-color: currentColor; }

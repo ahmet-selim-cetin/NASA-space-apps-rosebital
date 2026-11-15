@@ -69,6 +69,32 @@ markWorld();
 const fmtDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(getLang() === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 const fmtNum = (n) => n.toLocaleString(getLang() === 'tr' ? 'tr-TR' : 'en-US');
 
+// "14° 34′ 09,12″ G": degrees, minutes, seconds + hemisphere (N S E W; K G D B in Turkish)
+const HEMI_TR = { N: 'K', S: 'G', E: 'D', W: 'B' };
+function fmtDms([d, m, sec, h]) {
+  const tr = getLang() === 'tr';
+  return `${d}° ${m}′ ${tr ? sec.replace('.', ',') : sec}″ ${tr ? HEMI_TR[h] : h}`;
+}
+// A coordinate block: latitude and longitude on two lines, optional decimal line, and a link to the source page.
+function coordCell(labelText, c, withDecimal) {
+  const row = document.createElement('div');
+  const dt = document.createElement('dt'); dt.textContent = labelText;
+  const dd = document.createElement('dd'); dd.className = 'coord';
+  dd.append(fmtDms(c.lat), document.createElement('br'), fmtDms(c.lon));
+  if (withDecimal && c.dec) {
+    const small = document.createElement('small');
+    const num = (v) => (getLang() === 'tr' ? v.replace('.', ',') : v).replace('-', '\u2212');
+    small.textContent = `${num(c.dec[0])}°, ${num(c.dec[1])}° ${getLang() === 'tr' ? 'D' : 'E'}`;
+    dd.append(small);
+  }
+  const a = document.createElement('a');
+  a.className = 'coord-src'; a.href = c.src.url; a.target = '_blank'; a.rel = 'noopener';
+  a.textContent = `${t('panel.source')}: ${c.src.name} \u2197`;
+  dd.append(document.createElement('br'), a);
+  row.append(dt, dd);
+  return row;
+}
+
 function fillPanel(rover) {
   $('p-place').textContent = t(`${rover.id}.place`);
   $('p-name').textContent = rover.name;
@@ -80,13 +106,16 @@ function fillPanel(rover) {
   $('p-stats').hidden = !rover.stats;
   $('p-facts').hidden = !rover.facts;
   if (rover.facts) {
-    $('p-facts').replaceChildren(...rover.facts[getLang()].map(([label, value]) => {
+    const rows = rover.facts[getLang()].map(([label, value, wide]) => {
       const row = document.createElement('div');
+      if (wide) row.className = 'wide';
       const dt = document.createElement('dt'); dt.textContent = label;
       const dd = document.createElement('dd'); dd.textContent = value;
       row.append(dt, dd);
       return row;
-    }));
+    });
+    const sites = (rover.sites || []).map((site) => coordCell(t(site.labelKey), site, false));
+    $('p-facts').replaceChildren(...rows, ...sites);
   }
   if (rover.stats) {
     const s = rover.stats;
@@ -97,6 +126,18 @@ function fillPanel(rover) {
     $('p-planned').textContent = `${fmtNum(s.planned)} ${unit}`;
     $('p-lasted').textContent = `${fmtNum(s.lasted)} ${unit}`;
     $('p-distance').textContent = s.distanceKm < 1 ? `~${Math.round(s.distanceKm * 1000)} m` : `${fmtNum(s.distanceKm)} km`;
+  }
+  $('p-stats').querySelectorAll('.extra-coord').forEach((e) => e.remove());
+  $('p-coords-box').hidden = !rover.coords;
+  if (rover.coords) {
+    const cell = coordCell(t(rover.coords.label || 'panel.coords'), rover.coords, true);
+    $('p-coords-label').textContent = cell.querySelector('dt').textContent;
+    $('p-coords').replaceChildren(...cell.querySelector('dd').childNodes);
+    (rover.coordsMore || []).forEach((c) => {
+      const more = coordCell(t(c.label), c, true);
+      more.className = 'wide extra-coord';
+      $('p-stats').append(more);
+    });
   }
 
   // The long story is optional (not written yet for the Moon).

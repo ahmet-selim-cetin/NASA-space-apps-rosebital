@@ -132,6 +132,17 @@ All images are NASA imagery from the NASA Image and Video Library (https://image
 - Surveyor 3 — NASA Science: https://science.nasa.gov/mission/surveyor-3/
 - Apollo 12 lunar module (samples, time on the surface, ascent stage impact) — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C
 
+### Coordinates / Koordinatlar
+The side panel shows the landing-site coordinates exactly as printed on these pages (each panel also links to its source):
+- **Opportunity** — 1.9483° S, 354.47417° E — NASA Science: https://science.nasa.gov/mission/mer-opportunity/
+- **Spirit** — 14.5692° S, 175.4729° E — NASA/JPL NAIF mission catalog: https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/catalog/mission.cat
+- **Sojourner / Mars Pathfinder** — 19.13° N, 33.22° W — NASA Facts, Mars Pathfinder: https://mars.nasa.gov/internal_resources/815/ (other NASA pages give slightly different values: NSSDC 19.33° N, 33.55° W; Mars24 19.47° N, 326.75° E)
+- **Ingenuity** — first airfield, Wright Brothers Field, 18°26′41″ N 77°27′04″ E — Wikipedia, List of Ingenuity flights: https://en.wikipedia.org/wiki/List_of_Ingenuity_flights (no NASA page with coordinates was found). Its final resting place, Airfield Chi (flight 72), is on the same page: 18°29′50″ N 77°19′21″ E
+- **Surveyor 3** — 3.0162° S, 336.582° E (found from Lunar Reconnaissance Orbiter images) — NASA NSSDCA: https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1967-035A
+- **Apollo 12** — lunar module, 3.0128° S, 23.4219° W — NASA NSSDCA lunar sites: https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html
+
+Where the team's source sheet differed from the page it cites (Sojourner, Surveyor 3, small rounding for Apollo 12 and Ingenuity), the value printed on the cited page was used.
+
 ### Fonts and logo / Yazı tipleri ve logo
 - **Hacked** (intro title) — by David Libeau, licensed CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 · `fonts/hacked-font/`
 - **Nunito** (all other text) — Google Fonts, SIL Open Font License: https://fonts.google.com/specimen/Nunito
