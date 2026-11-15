@@ -15,10 +15,11 @@ const HELI_URL = 'models/ingenuity_mars_helicopter.glb'; // "Ingenuity Mars heli
 const HELI_SPAN = 1.21; // metres, blade tip to blade tip
 // Timeline in flight-clock seconds, from NASA/JPL's account of flight 72 (January 18, 2024): the navigation system lost the
 // surface patterns about 20 s after takeoff, the descent began at 19 s and the helicopter was back on the ground at 32 s.
-// The game runs `K` times slower than that clock so there is time to look around. What the player chooses (height, direction)
+// The game runs slower than that clock so there is time to look around: `kFree` times slower until the descent starts
+// (the part the player flies), `K` times slower from there on (the fall). What the player chooses (height, direction)
 // changes the view, never the ending.
 const FLIGHT = {
-  K: 1.5,
+  kFree: 1.9, K: 1.2,
   start: { x: -38, z: -34, heading: -2.3 }, // facing the middle of the terrain
   ceiling: 12, floor: 2, // metres above the ground; flight 72 reached 12 m
   maxSpeed: 3, driftSpeed: 1.8, // m/s (game time)
@@ -680,7 +681,8 @@ export class DriveSim {
     const F = FLIGHT, f = this.f;
     const gdt = dt * this.timeScale;
     f.t += gdt;
-    const c = f.t / F.K; // the flight clock, in the seconds NASA reports
+    const tDesc = F.descentAt * F.kFree; // game seconds at which the descent starts
+    const c = f.t < tDesc ? f.t / F.kFree : F.descentAt + (f.t - tDesc) / F.K; // the flight clock, in the seconds NASA reports
 
     // --- what the player asks for (only until the descent starts) ---
     const k = this.keys;
@@ -724,12 +726,13 @@ export class DriveSim {
         const sp0 = Math.hypot(f.vx, f.vz);
         const d0x = sp0 > 0.3 ? f.vx / sp0 : -Math.sin(f.heading), d0z = sp0 > 0.3 ? f.vz / sp0 : -Math.cos(f.heading);
         let dx = d0x, dz = d0z, sp = Math.max(sp0, F.driftSpeed);
-        // The whole drift covers about 30 times its starting speed (plus what its current speed still carries it).
+        // The whole drift covers about `reach` times its starting speed (plus what its current speed still carries it).
         // Keep the touchdown inside the terrain, so it never runs into the edge: slow it down, and if the edge is too
         // close, turn it toward the middle.
         const lx = field.halfW - EDGE_MARGIN, lz = field.halfD - EDGE_MARGIN;
         const room = (ux, uz) => Math.min(ux > 0 ? (lx - f.x) / ux : ux < 0 ? (-lx - f.x) / ux : Infinity, uz > 0 ? (lz - f.z) / uz : uz < 0 ? (-lz - f.z) / uz : Infinity);
-        const allowed = (ux, uz) => (room(ux, uz) - 4 - (sp0 * sp0) / 2.6) / 30; // fastest start speed that still lands inside
+        const reach = (F.landAt - F.descentAt) * F.K * 1.47 + 1.1; // metres of drift per m/s of starting speed
+        const allowed = (ux, uz) => (room(ux, uz) - 4 - (sp0 * sp0) / 2.6) / reach; // fastest start speed that still lands inside
         const m = Math.hypot(f.x, f.z) || 1, cx = -f.x / m, cz = -f.z / m; // toward the middle
         for (let k = 1; k <= 8 && allowed(dx, dz) < 0.8; k++) {
           const w = k / 8;
