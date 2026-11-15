@@ -402,3 +402,10 @@ body.flying #h-telemetry { display: none; }
 .flight-only { display: none; }
 body.flying .flight-only { display: flex; }
 #f-nav-bar { background: #8affc1; }
+
+/* ---------- Spirit: the last winter ---------- */
+.hud-spirit { display: none; }
+body.spirit .hud-spirit { display: grid; }
+body.spirit #h-telemetry { display: none; }
+#sp-energy-bar { background: #ffb347; }
+#sp-freed-bar { background: #7fd3ff; }

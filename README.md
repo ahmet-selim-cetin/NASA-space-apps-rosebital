@@ -29,6 +29,7 @@ gerçek NASA fotoğraflarıyla üç sayfalık bir resimli hikâye, tarihleri ve 
    *Görev bilgileri ve hikâyenin tamamı yan panelde, zaman çizelgesi olarak.*
 4. **Drive the last days / Son günleri sür** (Opportunity) — W A S D or arrow keys to drive, drag to look, C to change camera.
 5. **Fly the last flight / Son uçuşu yap** (Ingenuity) — W S to move, A D to turn, Space / Shift to go higher / lower, drag to look, C to change camera. You choose the height and the direction; the ending never changes (see below).
+6. **Try to break free / Kumdan kurtulmaya çalış** (Spirit) — W A S D to drive; after about 24 m (or 24 s) the sand takes the wheels, and then S or ↓ pushes in reverse, A D steer a little, drag to look, C to see Spirit from outside. The rover creeps a few centimetres at best, then winter takes the light; the ending never changes.
    In about two minutes the storm grows: dust fills the sky, solar power and battery fall, the rover slows down and finally goes silent.
    *Yaklaşık iki dakikada fırtına büyür: gökyüzü tozla dolar, güneş gücü ve batarya düşer, gezgin yavaşlar ve sonunda susar.*
 
@@ -166,3 +167,12 @@ The timeline follows NASA/JPL's account of flight 72 (January 18, 2024); the gam
 - NASA performs first aircraft accident investigation on another world (flight 72: 12 m, about 20 s after takeoff the navigation system could not find enough surface features, descent at 19 s, back on the ground at 32 s, hard impact on a sand ripple, all four blades snapped, contact later restored): https://www.jpl.nasa.gov/news/nasa-performs-first-aircraft-accident-investigation-on-another-world/
 - After three years on Mars, NASA's Ingenuity helicopter mission ends (contact with Perseverance lost about 1 m above the surface; mission end announced January 25, 2024): https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
 - The flight happens in Jezero Crater, but the ground in the game is the same team-made Opportunity terrain (`models/terrain/`), started from a different spot (northwest, facing the middle). The helicopter is shown at its real size (1.21 m rotor span). The spinning of the blades is for show.
+
+### Spirit's last winter game / Spirit'in son kışı oyunu
+60 seconds: free driving in "spring 2009", then the rover sinks into soft sand (after 24 m driven or 24 s, whichever comes first), then "winter 2010" (sols 2190 to 2210). The ten months between getting stuck and the winter are skipped on screen, which is why the date changes from "Spring 2009" to the sol count. Facts follow NASA/JPL (the rover sat in soft sand beside Home Plate from spring 2009, could not tilt its solar panels toward the Sun in winter 2010, moved only about 13 inches (33 cm) in its last 10 backward drives, went into deep sleep with its heaters and radio off, and last communicated on March 22, 2010, sol 2210; the last recovery attempt ended on May 25, 2011).
+- NASA's Spirit rover completes mission on Mars (7.73 km, March 22, 2010, May 25, 2011): https://www.jpl.nasa.gov/news/nasas-spirit-rover-completes-mission-on-mars/
+- NASA trapped Mars rover finds evidence of subsurface water (winter 2010 plan, deep sleep, 13 inches in the last 10 backward drives): https://jpl.nasa.gov/news/news.php?release=2010-355
+- NASA concludes attempts to contact Mars rover Spirit (more than 1,300 commands, May 25, 2011): https://www.jpl.nasa.gov/news/nasa-concludes-attempts-to-contact-mars-rover-spirit/
+- Mars Exploration Rover Spirit End of Mission Report (sol 2210): https://ntrs.nasa.gov/citations/20160001767
+- The model is the same twin rover as Opportunity (`models/nasa_opportunity_rover.glb`). The ground is the same team-made Opportunity terrain (`models/terrain/`), started from the southwest; the place name on screen is Gusev Crater · Home Plate.
+- The game shows the real 33 cm as the most the rover can move. Pushing changes the numbers (how much sand is thrown, how far it creeps), never the ending.

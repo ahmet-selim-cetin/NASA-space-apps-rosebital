@@ -53,7 +53,7 @@
     <div id="fx-black" class="fx-black"></div>
     <div class="hud hud-top">
       <p class="hud-title" id="h-title">MER-B · OPPORTUNITY</p>
-      <p class="hud-sub"><span id="h-location" data-i18n="drive.location"></span><span id="h-sol-wrap"> · SOL <span id="h-sol">5100</span></span></p>
+      <p class="hud-sub"><span id="h-location" data-i18n="drive.location"></span><span id="h-sol-wrap"> · SOL <span id="h-sol">5100</span></span><span id="h-season" data-i18n="sp.season" hidden></span></p>
     </div>
     <div class="drive-actions">
       <button class="btn btn-hud" id="d-sound" aria-label="Sound"><span id="d-sound-icon">🔊</span></button>
@@ -88,6 +88,23 @@
       <div class="gauge"><span class="g-label" data-i18n="fly.alt"></span><span class="g-value"><b id="f-alt">0.0</b> m</span></div>
       <div class="gauge"><span class="g-label" data-i18n="fly.speed"></span><span class="g-value"><b id="f-speed">0.0</b> m/s</span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="f-heading">000° N</b></span></div>
+    </div>
+    <!-- Spirit: the last winter (shown instead of the rover's telemetry) -->
+    <div class="hud hud-telemetry hud-spirit" id="sp-telemetry">
+      <div class="gauge wide">
+        <span class="g-label" data-i18n="sp.energy"></span>
+        <span class="g-value"><b id="sp-energy">100</b> %</span>
+        <span class="g-bar"><i id="sp-energy-bar"></i></span>
+      </div>
+      <div class="gauge wide">
+        <span class="g-label" data-i18n="sp.freed"></span>
+        <span class="g-value"><b id="sp-freed">0</b> cm</span>
+        <span class="g-bar"><i id="sp-freed-bar"></i></span>
+      </div>
+      <div class="gauge"><span class="g-label" data-i18n="sp.heaters"></span><span class="g-value"><b id="sp-heaters" data-i18n="sp.on"></b></span></div>
+      <div class="gauge"><span class="g-label" data-i18n="sp.radio"></span><span class="g-value"><b id="sp-radio" data-i18n="sp.on"></b></span></div>
+      <div class="gauge"><span class="g-label" data-i18n="sp.wheels"></span><span class="g-value"><b id="sp-wheels" data-i18n="sp.still"></b></span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="sp-heading">000° N</b></span></div>
     </div>
     <ol id="d-log" class="hud drive-log"></ol>
     <p class="drive-help hidden" id="drive-help" data-i18n="drive.help"></p>

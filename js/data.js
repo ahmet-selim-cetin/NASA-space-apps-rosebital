@@ -21,7 +21,8 @@ export const ROVERS = [
     lat: -14.5692,
     lon: 175.4729,
     color: '#7fd3ff',
-    playable: false,
+    playable: true,
+    playKey: 'panel.escape', // button label
     stats: { landed: '2004-01-03', last: '2010-03-22', distanceKm: 7.73, planned: 90, lasted: 2210, unit: 'sols' },
     coords: {
       lat: ['14', '34', '09.12', 'S'], lon: ['175', '28', '22.44', 'E'], dec: ['-14.5692', '175.4729'],

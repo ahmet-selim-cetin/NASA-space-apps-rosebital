@@ -283,6 +283,10 @@ const drive = new DriveSim($('drive'), {
   sol: $('h-sol'), telemetry: $('h-telemetry'), fxDust: $('fx-dust'), fxNoise: $('fx-noise'), fxBlack: $('fx-black'),
   // Ingenuity flight
   fTelemetry: $('f-telemetry'), fNav: $('f-nav'), fNavBar: $('f-nav-bar'), fClock: $('f-clock'), fAlt: $('f-alt'), fSpeed: $('f-speed'), fHeading: $('f-heading'),
+  // Spirit
+  solWrap: $('h-sol-wrap'), season: $('h-season'),
+  spTelemetry: $('sp-telemetry'), spEnergy: $('sp-energy'), spEnergyBar: $('sp-energy-bar'), spFreed: $('sp-freed'), spFreedBar: $('sp-freed-bar'),
+  spHeaters: $('sp-heaters'), spRadio: $('sp-radio'), spWheels: $('sp-wheels'), spHeading: $('sp-heading'),
 });
 const wind = new WindAudio();
 const ending = $('ending');
@@ -325,6 +329,11 @@ const MISSIONS = {
     end: { kicker: 'fly.end.kicker', title: 'fly.end.title', body: 'fly.end.body', closing: 'fly.end.closing', again: 'fly.end.again' },
     stats: ['<span data-i18n="fly.stat.planned"></span>', '<span data-i18n="fly.stat.lasted"></span>', '<span data-i18n="fly.stat.distance"></span>'],
   },
+  spirit: {
+    title: 'MER-A · SPIRIT', location: 'sp.location', sol: true, loading: 'sp.loading', card: 'sp.card', help: 'sp.help',
+    end: { kicker: 'sp.end.kicker', title: 'sp.end.title', body: 'sp.end.body', closing: 'end.closing', again: 'sp.end.again' },
+    stats: ['<span data-i18n="sp.stat.planned"></span>', '<span data-i18n="sp.stat.lasted"></span>', '<span data-i18n="sp.stat.distance"></span>'],
+  },
 };
 let mission = 'opportunity';
 function setMissionUI(id) {
@@ -333,10 +342,12 @@ function setMissionUI(id) {
   $('h-title').textContent = m.title;
   $('h-location').dataset.i18n = m.location;
   $('h-sol-wrap').hidden = !m.sol;
+  $('h-season').hidden = true; // only Spirit uses it (spring 2009), driven by the game
   $('drive-help').dataset.i18n = m.help;
   for (const [k, key] of Object.entries(m.end)) { const el = $({ kicker: 'e-kicker', title: 'e-title', body: 'e-body', closing: 'e-closing', again: 'e-again-label' }[k]); el.dataset.i18n = key; }
   ['e-planned', 'e-lasted', 'e-distance'].forEach((eid, i) => { $(eid).innerHTML = m.stats[i]; });
   document.body.classList.toggle('flying', id === 'ingenuity');
+  document.body.classList.toggle('spirit', id === 'spirit');
   drive.setMission(id);
   applyI18n();
 }
@@ -377,7 +388,7 @@ async function stopDrive() {
   drive.stop();
   wind.stop();
   hideEnding();
-  document.body.classList.remove('driving', 'flying');
+  document.body.classList.remove('driving', 'flying', 'spirit');
   globe.setActive(true);
   globe.resize();
   fade.classList.remove('on');

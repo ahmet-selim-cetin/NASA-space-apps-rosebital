@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { t } from './i18n.js';
 
 const ROVER_URL = 'models/nasa_opportunity_rover.glb';
 const ROVER_HEIGHT = 1.55; // metres, wheels to top of the camera mast
@@ -9,6 +10,28 @@ const TERRAIN_URL = 'models/terrain/';
 const EDGE_MARGIN = 8; // metres; the rover is turned back this far inside the edge of the team's terrain
 const EDGE_BLEND = 45; // metres; outside the terrain the ground eases into generated hills for the horizon
 const MAX_GRADE = 0.62; // rise/run the rover can climb (~32°); steeper ground stops it
+
+// ---------- Spirit: the last winter ----------
+// Spirit sat in soft sand beside Home Plate from spring 2009 and never drove out. In winter 2010 it could not tilt its panels toward
+// the Sun; its last 10 backward drives moved it only about 13 inches (33 cm). The game is 60 seconds: free driving in "spring 2009",
+// then the sand takes the wheels (after 24 m driven or 24 s, whichever comes first), then "winter 2010" (sols 2190 to 2210).
+// What the player does changes the numbers, never the ending.
+const SPIRIT = {
+  start: { x: -35, z: 35, heading: -Math.PI / 4 }, // facing the middle of the terrain
+  maxSpeed: 1.4, stuckTrip: 24, stuckBy: 24, sinkTime: 3, // driving phase: m/s, then the sand takes over
+  max: 33, // cm of progress the real rover made in its last 10 backward drives
+  rate: 3, // cm per second of pushing at full energy
+  sink: 0.1, tilt: 0.04, // metres sunk into the sand, and the nose-up tilt of a rover stuck on its belly
+  solStart: 2190,
+  winterAt: 30, sleepAt: 50, lastAt: 54, endAt: 60, inchesBy: 46, // seconds
+  energy: (tt) => (tt < 20 ? 100 : tt < 50 ? 100 - (88 * (tt - 20)) / 30 : Math.max(0, 12 - (12 * (tt - 50)) / 4)), // percent
+};
+const SPIRIT_LOG = [
+  { t: 1, key: 'sp.log.explore' },
+  { t: SPIRIT.winterAt, key: 'sp.log.winter' },
+  { t: SPIRIT.sleepAt, key: 'sp.log.sleep' },
+  { t: SPIRIT.lastAt, key: 'sp.log.last' },
+];
 
 // ---------- Ingenuity: the last flight ----------
 const HELI_URL = 'models/ingenuity_mars_helicopter.glb'; // "Ingenuity Mars helicopter" by Cybertron B-127, CC BY 4.0
@@ -251,7 +274,7 @@ export class DriveSim {
   }
 
   // Pick the vehicle before load()/start(): 'opportunity' drives, 'ingenuity' flies.
-  setMission(id) { this.mission = id === 'ingenuity' ? 'ingenuity' : 'opportunity'; }
+  setMission(id) { this.mission = id === 'ingenuity' || id === 'spirit' ? id : 'opportunity'; }
 
   async load(onProgress) {
     if (!this.envBuilt) {
@@ -274,6 +297,7 @@ export class DriveSim {
 
   start() {
     if (this.mission === 'ingenuity') return this.#startFlight();
+    if (this.mission === 'spirit') return this.#startSpirit();
     if (this.heli) this.heli.visible = false;
     if (this.puffs) this.puffs.points.visible = false;
     this.rover.visible = true;
@@ -315,6 +339,7 @@ export class DriveSim {
   update(dt) {
     if (!this.running) return;
     if (this.mission === 'ingenuity') return this.#updateFlight(dt);
+    if (this.mission === 'spirit') return this.#updateSpirit(dt);
     const s = this.state;
 
     // --- input ---
@@ -636,22 +661,8 @@ export class DriveSim {
     });
   }
 
-  // ---------- Flight 72 ----------
-  #startFlight() {
-    const F = FLIGHT;
-    if (this.rover) this.rover.visible = false;
-    this.heli.visible = true;
-    this.tracks.count = 0;
-    for (const r of this.rotors) { r.pivot.scale.setScalar(1); r.pivot.rotation.set(0, 0, 0); }
-    this.f = {
-      t: 0, x: F.start.x, z: F.start.z, alt: 0, heading: F.start.heading, speed: 0, target: 8, spin: 0, spinAngle: 0,
-      drift: null, descentT0: -1, descentAlt: 0, crashed: false, impactT: 0, commsT: -1, logNext: 0, ended: false, nav: 1,
-      tilt: { p: 0, r: 0 }, bounce: 0, vx: 0, vz: 0, slide: null, camTilt: { p: 0, r: 0 }, unstable: 0, wob: { p: 0, r: 0 }, burst: false,
-    };
-    this.look.yaw = 0; this.look.pitch = 0;
-    this.fSpeed = 0;
-    this.#resetPuffs();
-    // a clear, calm sky: none of the storm
+  // A clear, calm sky: none of the storm.
+  #clearSky() {
     this.haze.copy(this.hazeClear);
     this.scene.fog.density = 0.0055;
     this.skyUniforms.horizon.value.copy(this.haze);
@@ -669,7 +680,26 @@ export class DriveSim {
       h.fxDust.style.opacity = '0'; h.fxNoise.style.opacity = '0'; h.fxBlack.style.height = '0%';
       h.telemetry.style.opacity = '1';
       if (h.fTelemetry) h.fTelemetry.style.opacity = '1';
+      if (h.spTelemetry) h.spTelemetry.style.opacity = '1';
     }
+  }
+
+  // ---------- Flight 72 ----------
+  #startFlight() {
+    const F = FLIGHT;
+    if (this.rover) this.rover.visible = false;
+    this.heli.visible = true;
+    this.tracks.count = 0;
+    for (const r of this.rotors) { r.pivot.scale.setScalar(1); r.pivot.rotation.set(0, 0, 0); }
+    this.f = {
+      t: 0, x: F.start.x, z: F.start.z, alt: 0, heading: F.start.heading, speed: 0, target: 8, spin: 0, spinAngle: 0,
+      drift: null, descentT0: -1, descentAlt: 0, crashed: false, impactT: 0, commsT: -1, logNext: 0, ended: false, nav: 1,
+      tilt: { p: 0, r: 0 }, bounce: 0, vx: 0, vz: 0, slide: null, camTilt: { p: 0, r: 0 }, unstable: 0, wob: { p: 0, r: 0 }, burst: false,
+    };
+    this.look.yaw = 0; this.look.pitch = 0;
+    this.fSpeed = 0;
+    this.#resetPuffs();
+    this.#clearSky();
     this.running = true;
     this.container.classList.add('active');
     this.resize();
@@ -832,6 +862,171 @@ export class DriveSim {
     this.heli.visible = this.view !== 'first'; // seen from outside only
   }
 
+  // ---------- Spirit ----------
+  #i18nText(el, key) { if (el && el.dataset.i18n !== key) { el.dataset.i18n = key; el.textContent = t(key); } }
+
+  #startSpirit() {
+    const S = SPIRIT, h = this.hud;
+    if (this.heli) this.heli.visible = false;
+    this.rover.visible = true;
+    Object.assign(this.state, { x: S.start.x, z: S.start.z, heading: S.start.heading, speed: 0, trip: 0, sol: S.solStart });
+    this.trackCount = 0;
+    this.tracks.count = 0;
+    this.lastTrack.set(S.start.x, S.start.z);
+    this.sp = { t: 0, phase: 'drive', tStuck: 0, freed: 0, thrust: 0, energy: 100, logNext: 0, hint: false, inches: false, spinning: false, asleep: false, ended: false };
+    this.look.yaw = 0; this.look.pitch = 0;
+    this.#clearSky();
+    this.#resetPuffs();
+    this.windLevel = 0.1;
+    this.onWind?.(0.1, 1);
+    if (h) {
+      this.#i18nText(h.spHeaters, 'sp.on'); this.#i18nText(h.spRadio, 'sp.on'); this.#i18nText(h.spWheels, 'sp.still');
+    }
+    this.rover.quaternion.identity();
+    this.running = true;
+    this.container.classList.add('active');
+    this.resize();
+    this.#placeRover(null);
+    this.#updateCamera(0);
+    this.#updateSpiritHud();
+  }
+
+  #updateSpirit(dt) {
+    const S = SPIRIT, sp = this.sp, s = this.state;
+    const gdt = dt * this.timeScale;
+    sp.t += gdt;
+    const k = this.keys;
+    const fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0) + this.touch.fwd;
+    const turn = (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0) - (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) + this.touch.turn;
+    sp.energy = S.energy(sp.t);
+    sp.asleep = sp.t >= S.sleepAt;
+
+    // --- phase: drive freely, until the sand takes the wheels (after 24 m, or 24 s) ---
+    if (sp.phase === 'drive' && (s.trip >= S.stuckTrip || sp.t >= S.stuckBy)) {
+      sp.phase = 'sinking'; sp.tStuck = sp.t;
+      this.onLog?.('sp.log.stuck');
+    }
+    if (sp.phase === 'sinking' && sp.t >= sp.tStuck + S.sinkTime) sp.phase = 'stuck';
+
+    if (sp.phase === 'drive' || sp.phase === 'sinking') {
+      const sinking = sp.phase === 'sinking';
+      const target = sinking ? 0 : THREE.MathUtils.clamp(fwd, -0.5, 1) * S.maxSpeed;
+      const rate = sinking ? 1.2 : Math.abs(target) > Math.abs(s.speed) ? 1.4 : 2.6; // the sand brakes it
+      s.speed += THREE.MathUtils.clamp(target - s.speed, -rate * gdt, rate * gdt);
+      if (!sinking) s.heading += turn * 0.75 * (0.35 + 0.65 * Math.min(1, Math.abs(s.speed) / S.maxSpeed + 0.3)) * gdt * (s.speed < -0.05 ? -1 : 1);
+      let nx = s.x - Math.sin(s.heading) * s.speed * gdt, nz = s.z - Math.cos(s.heading) * s.speed * gdt;
+      const lx = field.halfW - EDGE_MARGIN, lz = field.halfD - EDGE_MARGIN;
+      if (Math.abs(nx) > lx || Math.abs(nz) > lz) { nx = THREE.MathUtils.clamp(nx, -lx, lx); nz = THREE.MathUtils.clamp(nz, -lz, lz); s.speed *= 0.9; }
+      const step = Math.hypot(nx - s.x, nz - s.z);
+      if (step > 1e-5) { // too steep to climb: stop at the foot of the slope
+        const look = 1.2 * Math.sign(s.speed), ax = s.x - Math.sin(s.heading) * look, az = s.z - Math.cos(s.heading) * look;
+        if ((terrainHeight(ax, az) - terrainHeight(s.x, s.z)) / 1.2 > MAX_GRADE) { nx = s.x; nz = s.z; s.speed *= 0.5; }
+      }
+      const pos = { x: nx, z: nz };
+      if (this.#collideBoulders(pos)) { nx = pos.x; nz = pos.z; s.speed *= 0.6; }
+      s.trip += Math.hypot(nx - s.x, nz - s.z);
+      s.x = nx; s.z = nz;
+      sp.thrust += ((sinking ? 1 : 0) - sp.thrust) * Math.min(1, gdt * 5); // the wheels spin while the sand takes them
+      sp.freed = 0;
+      this.#dropTracks();
+    } else {
+      // stuck: only reverse works, which is what the real rover kept trying. A D steer a little while pushing.
+      s.speed = 0;
+      const back = Math.min(1, (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0) + Math.max(0, -this.touch.fwd));
+      sp.thrust += (back * (sp.energy > 0.5 && !sp.asleep ? 1 : 0) - sp.thrust) * Math.min(1, gdt * 5);
+      const before = sp.freed;
+      sp.freed = Math.min(S.max, sp.freed + S.rate * (sp.energy / 100) * sp.thrust * gdt);
+      const moved = (sp.freed - before) / 100; // metres, backward
+      s.x += Math.sin(s.heading) * moved; s.z += Math.cos(s.heading) * moved;
+      s.heading += turn * 0.12 * sp.thrust * gdt;
+    }
+    sp.spinning = sp.thrust > 0.1;
+    // spring 2009 on screen until winter; then sols 2190 to 2210
+    s.sol = Math.min(2210, S.solStart + Math.max(0, Math.floor((20 * (sp.t - S.winterAt)) / (S.lastAt - S.winterAt))));
+
+    // --- messages ---
+    while (sp.logNext < SPIRIT_LOG.length && sp.t >= SPIRIT_LOG[sp.logNext].t) this.onLog?.(SPIRIT_LOG[sp.logNext++].key);
+    // the first-person view hardly shows a rover creeping, so suggest the outside camera a few seconds after it sinks
+    if (!sp.hint && sp.phase !== 'drive' && sp.t >= sp.tStuck + 4) { sp.hint = true; if (this.view === 'first') this.onLog?.('sp.log.camera'); }
+    if (!sp.inches && sp.phase === 'stuck' && (sp.freed >= S.max - 0.01 || sp.t >= S.inchesBy)) { sp.inches = true; this.onLog?.('sp.log.inches'); }
+
+    // --- the rover: sinks into the sand, rocks a little while the wheels spin ---
+    const sinkK = sp.phase === 'drive' ? 0 : THREE.MathUtils.smoothstep(sp.t, sp.tStuck, sp.tStuck + S.sinkTime);
+    const rock = Math.sin(sp.t * 8) * 0.012 * sp.thrust;
+    this.#placeRover(dt, new THREE.Euler(S.tilt * sinkK + rock * 0.6, 0, rock), S.sink * sinkK);
+    this.#emitSpiritPuffs(dt);
+    this.#stepPuffs(dt);
+    this.#updateCamera(dt);
+    this.#updateSpiritHud();
+    this.#spiritFx(sp);
+
+    this.sun.position.copy(this.rover.position).addScaledVector(this.sunDir, 60);
+    this.sun.target.position.copy(this.rover.position);
+    this.sky.position.copy(this.camera.getWorldPosition(this._v1));
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  // Winter light fades, then the deep sleep: everything switches off, a last noisy picture, black, the ending.
+  #spiritFx(sp) {
+    const S = SPIRIT, t = sp.t, h = this.hud, ramp = THREE.MathUtils.smoothstep;
+    const dusk = ramp(t, S.winterAt - 2, S.sleepAt); // the Sun sinks low and the light goes
+    this.haze.copy(this.hazeClear).lerp(this.hazeDark, dusk * 0.9);
+    this.scene.fog.density = 0.0055 + 0.012 * dusk;
+    this.skyUniforms.horizon.value.copy(this.haze);
+    this.skyUniforms.zenith.value.copy(this.zenithClear).lerp(this.hazeDark, dusk * 0.9);
+    this.skyUniforms.sunStrength.value = 1 - ramp(t, S.winterAt - 2, S.sleepAt - 8);
+    this.sun.intensity = 2.4 * (1 - 0.85 * dusk);
+    this.hemi.intensity = 1.15 * (1 - 0.75 * dusk);
+    if (h) {
+      this.#i18nText(h.spHeaters, sp.asleep ? 'sp.off' : 'sp.on');
+      this.#i18nText(h.spRadio, sp.asleep ? 'sp.off' : 'sp.on');
+      const noise = ramp(t, S.sleepAt - 2, S.lastAt + 1);
+      if (h.fxNoise) {
+        h.fxNoise.style.opacity = (noise * 0.22).toFixed(3);
+        if (noise > 0.01) this.#drawNoise(h.fxNoise);
+        h.fxBlack.style.height = `${ramp(t, S.lastAt + 2, S.endAt - 0.5) * 100}%`;
+      }
+      if (h.spTelemetry) h.spTelemetry.style.opacity = (1 - ramp(t, S.sleepAt, S.sleepAt + 3.5)).toFixed(3);
+    }
+    this.onWind?.(0.1 + 0.08 * dusk, 1 - ramp(t, S.sleepAt, S.lastAt + 2));
+    if (!sp.ended && t >= S.endAt) { sp.ended = true; this.onEnd?.(); }
+  }
+
+  // Sand thrown up by the spinning wheels
+  #emitSpiritPuffs(dt) {
+    const P = this.puffs, s = this.state, sp = this.sp;
+    if (!P || !dt || !sp.spinning) return;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    P.acc += 50 * sp.thrust * dt;
+    const fx = -Math.sin(s.heading), fz = -Math.cos(s.heading), rx = Math.cos(s.heading), rz = -Math.sin(s.heading);
+    while (P.acc >= 1) {
+      P.acc -= 1;
+      const side = Math.random() < 0.5 ? -1 : 1, row = Math.floor(Math.random() * 3) - 1;
+      const wx = s.x + rx * this.halfTrack * side + fx * this.halfBase * row, wz = s.z + rz * this.halfTrack * side + fz * this.halfBase * row;
+      const f = rnd(0.8, 2), o = rnd(0.2, 0.8) * side; // reversing wheels throw sand forward and out
+      this.#emitPuff(wx, terrainHeight(wx, wz) + 0.08, wz, fx * f + rx * o, rnd(0.7, 1.6), fz * f + rz * o, rnd(0.7, 1.3), rnd(0.12, 0.25), 1.5);
+    }
+  }
+
+  #updateSpiritHud() {
+    const h = this.hud, sp = this.sp, s = this.state;
+    if (!h?.spEnergy) return;
+    h.spEnergy.textContent = Math.round(sp.energy);
+    h.spEnergyBar.style.width = `${sp.energy}%`;
+    h.spFreed.textContent = Math.round(sp.freed);
+    h.spFreedBar.style.width = `${(sp.freed / SPIRIT.max) * 100}%`;
+    const row = h.spFreed.closest('.gauge');
+    if (row) row.style.visibility = sp.phase === 'drive' ? 'hidden' : 'visible'; // nothing to free yet
+    this.#i18nText(h.spWheels, sp.spinning ? 'sp.spinning' : 'sp.still');
+    const deg = ((THREE.MathUtils.radToDeg(-s.heading) % 360) + 360) % 360;
+    h.spHeading.textContent = `${String(Math.round(deg) % 360).padStart(3, '0')}° ${['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(deg / 45) % 8]}`;
+    // "Spring 2009" until winter, then the sol count
+    const winter = sp.t >= SPIRIT.winterAt;
+    if (h.season) h.season.hidden = winter;
+    if (h.solWrap) h.solWrap.hidden = !winter;
+    if (h.sol) h.sol.textContent = s.sol.toLocaleString('en-US');
+  }
+
   // ---------- Sand dust: the rotor wash near the ground, and the cloud when it hits ----------
   #buildPuffs() {
     const N = 320;
@@ -906,6 +1101,11 @@ export class DriveSim {
         this.#emitPuff(f.x + rnd(-0.3, 0.3), ground + 0.1, f.z + rnd(-0.3, 0.3), rnd(-0.8, 0.8) - f.vx * 0.2, rnd(0.3, 1), rnd(-0.8, 0.8) - f.vz * 0.2, rnd(1, 2), rnd(0.4, 0.7), 2);
       }
     }
+    this.#stepPuffs(dt);
+  }
+
+  #stepPuffs(dt) {
+    const P = this.puffs;
     // move, spread and fade
     const g = P.points.geometry.attributes, pos = g.position.array, size = g.aSize.array, alpha = g.aAlpha.array;
     for (let i = 0; i < P.N; i++) {
@@ -967,7 +1167,7 @@ export class DriveSim {
     h.fHeading.textContent = `${String(Math.round(deg) % 360).padStart(3, '0')}° ${['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(deg / 45) % 8]}`;
   }
 
-  #placeRover(dt) {
+  #placeRover(dt, tilt, sink) {
     const s = this.state;
     const fx = -Math.sin(s.heading), fz = -Math.cos(s.heading); // forward
     const rx = Math.cos(s.heading), rz = -Math.sin(s.heading); // right
@@ -982,8 +1182,9 @@ export class DriveSim {
     const up = this._v1.crossVectors(right, fwd).normalize();
     right.crossVectors(fwd, up).normalize();
     this._q.setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, up, fwd.clone().negate()));
+    if (tilt) this._q.multiply(new THREE.Quaternion().setFromEuler(tilt)); // e.g. a rover sitting nose-up in sand
 
-    const y = (hFL + hFR + hRL + hRR) / 4;
+    const y = (hFL + hFR + hRL + hRR) / 4 - (sink || 0);
     if (dt === null) {
       this.roverY = y;
       this.rover.quaternion.copy(this._q);
