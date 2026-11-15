@@ -3,7 +3,10 @@
 //   <out>/height.bin     Uint16 heights (row-major, z rows then x), 1 m cells
 //   <out>/color.png      surface colour from the model's vertex colours, 0.5 m per pixel
 // Tiles that overlap are cross-faded instead of stacked, which removes the seams between them.
-// usage: node tools/bake-terrain.mjs <in.glb> <outDir> [cropMetres]
+// usage: node tools/bake-terrain.mjs <in.glb> <outDir> [cropMetres] [splitX,feather] [onlyNodeName]
+// onlyNodeName keeps just the nodes whose name contains that text (e.g. one tile of several).
+// Two tiles that overlap and do not agree in height (e.g. the Moon model) can be joined along a line instead:
+// splitX is the model x where the left tile hands over to the right one, feather is the half width of the hand-over (metres).
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 
@@ -13,6 +16,8 @@ const COARSE = 1; // height grid shipped to the game (m)
 const FEATHER = 2; // m, cross-fade width inside each tile edge
 const LIP = 1.5; // m, strip along each tile edge that is skipped where tiles overlap
 const CROP = +process.argv[4] || 3; // m, trimmed off the ragged outer border (optional 3rd argument)
+const SPLIT = process.argv[5] && process.argv[5] !== '-' ? process.argv[5].split(',').map(Number) : null; // [splitX, feather] (optional 4th argument)
+const ONLY = process.argv[6] || ''; // optional 5th argument
 
 const b = fs.readFileSync(inPath);
 const jlen = b.readUInt32LE(12);
@@ -41,7 +46,7 @@ function acc(i) {
 const tiles = [];
 let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
 for (const n of j.nodes) {
-  if (n.mesh === undefined) continue;
+  if (n.mesh === undefined || (ONLY && !(n.name || '').includes(ONLY))) continue;
   const m = n.matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ...(n.translation || [0, 0, 0]), 1];
   const prim = j.meshes[n.mesh].primitives[0];
   const P = acc(prim.attributes.POSITION), C = acc(prim.attributes.COLOR_0), I = acc(prim.indices);
@@ -64,7 +69,8 @@ console.log('tiles', tiles.length, 'area', (nx - 1) * FINE, 'x', (nz - 1) * FINE
 // 2. rasterise each tile's top surface, then cross-fade tiles with weights that fall to 0 at their edges
 const accH = new Float64Array(nx * nz), accW = new Float64Array(nx * nz), accC = new Float64Array(nx * nz * 3);
 const rawH = new Float64Array(nx * nz), rawN = new Float64Array(nx * nz), rawC = new Float64Array(nx * nz * 3);
-for (const { W, C, I, box } of tiles) {
+const order = tiles.map((tl, i) => i).sort((a, b) => tiles[a].box[0] - tiles[b].box[0]); // left to right
+for (const [ti, { W, C, I, box }] of tiles.entries()) {
   const H = new Float32Array(nx * nz).fill(-Infinity), RGB = new Float32Array(nx * nz * 3);
   for (let t = 0; t < I.length; t += 3) {
     const ia = I[t], ib = I[t + 1], ic = I[t + 2];
@@ -92,7 +98,11 @@ for (const { W, C, I, box } of tiles) {
     const wx = x0 + gx * FINE, wz = z0 + gz * FINE;
     const edge = Math.min(wx - box[0], box[1] - wx, wz - box[2], box[3] - wz);
     // each tile has a raised lip along its own edge: ignore its outer LIP metres where another tile takes over
-    const w = Math.max(0, Math.min(1, (edge - LIP) / FEATHER)) ** 2;
+    let w = Math.max(0, Math.min(1, (edge - LIP) / FEATHER)) ** 2;
+    if (SPLIT && tiles.length === 2) { // hand over from the left tile to the right one around SPLIT[0], ignoring the tiles' own ragged edges
+      const k = Math.min(1, Math.max(0, (wx + SPLIT[1] - SPLIT[0]) / (2 * SPLIT[1]))), sm = k * k * (3 - 2 * k);
+      w = Math.max(1e-4, order[0] === ti ? 1 - sm : sm);
+    }
     accH[i] += H[i] * w; accW[i] += w;
     for (let k = 0; k < 3; k++) accC[i * 3 + k] += RGB[i * 3 + k] * w;
     rawH[i] += H[i]; rawN[i]++;

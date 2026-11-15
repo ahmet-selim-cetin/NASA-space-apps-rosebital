@@ -1,0 +1,15 @@
+{
+ "source": "Apollo 12 ve Surveyor Ay Görev(1)- Landing Site.glb",
+ "width": 902,
+ "depth": 491,
+ "nx": 903,
+ "nz": 492,
+ "cell": 1,
+ "hmin": -16.1569,
+ "hmax": 17.3924,
+ "color": {
+  "nx": 1806,
+  "nz": 983,
+  "cell": 0.5
+ }
+}
