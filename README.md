@@ -177,10 +177,24 @@ The side panel shows the landing-site coordinates exactly as printed on these pa
 Where the team's source sheet differed from the page it cites (Sojourner, Surveyor 3, Viking 1, Apollo 15, small rounding for Apollo 12 and Ingenuity), the value printed on the cited page was used. Masses on the sheet (Viking, InSight, Apollo 11 and 15) are not shown, because it is unclear what they measure.
 
 
+### Use of Super Intelligence (SI) / Süper Zekâ (SI) kullanımı
+
+Team Rosebital used SI tools while building this project. We list where, so judges can see it.
+
+| Area | SI used | What SI did | What the team did |
+|---|---|---|---|
+| Software development | **Claude (Anthropic) via Claude Code** | Wrote and edited most of the JavaScript, CSS and HTML (`js/`, `css/`, `index.html`), the terrain baking tool (`tools/bake-terrain.mjs`) and the mini-games' logic | Directed the design, tested the site, approved every change |
+| Stories and fact-checking | Claude | Translated the team's Turkish stories into English, shortened them into the 3-slide texts, and compared every fact with NASA/JPL/NSSDCA pages | Wrote every story in Turkish, decided which values and wording to keep |
+| Logo | **Claude Design** | Helped produce the Rosebital logo (`assets/`) | Directed and approved the design |
+| Demo video | **CapCut** (AI voice) | **The narration (voice-over) is AI-generated** | Wrote the script and made the video |
+| Images and video | – | **No SI-generated images or video, except the logo above.** All other pictures are NASA imagery | – |
+
+*Bu projede yapay zekâ araçları kullanıldı. **Yazılım geliştirmede Claude (Claude Code)**; hikâyelerin İngilizce çevirisinde ve NASA kaynaklarıyla bilgi kontrolünde Claude; **logoda Claude Design**; **demo videosunun seslendirmesinde CapCut'ın yapay zekâ sesi** kullanıldı. Logo dışında SI ile üretilmiş görsel veya video yoktur; diğer tüm resimler NASA görselleridir. Hikâyelerin tamamını ekip Türkçe yazdı ve her değişikliği onayladı.*
+
 ### Fonts and logo / Yazı tipleri ve logo
 - **Hacked** (intro title) — by David Libeau, licensed CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 · `fonts/hacked-font/`
 - **Nunito** (all other text) — Google Fonts, SIL Open Font License: https://fonts.google.com/specimen/Nunito
-- **Logo** — Rosebital / GZOAL Tech Team logo, made by the team (`assets/rosebital-lockup-dark.svg`). `assets/rosebital-logo.svg`, `assets/rosebital-pill.svg`, `assets/favicon.svg`, `favicon.ico` and `img/share-card.png` are derived from it (background removed, straightened, cropped).
+- **Logo** — Rosebital / GZOAL Tech Team logo, made by the team with Claude Design (`assets/rosebital-lockup-dark.svg`). `assets/rosebital-logo.svg`, `assets/rosebital-pill.svg`, `assets/favicon.svg`, `favicon.ico` and `img/share-card.png` are derived from it (background removed, straightened, cropped).
 
 ### Team source sheet / Takım kaynak tablosu
 https://docs.google.com/spreadsheets/d/1B27CVgnJ7uxL9cvEWX8QfvTVxY87lROzzPXS3N427qw
