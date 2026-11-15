@@ -263,7 +263,7 @@ const STRINGS = {
     'viking2.tagline': 'İkizi çok kuzeye indi. Pili bitene kadar 1.281 Mars günü çalıştı.',
     'insight.place': 'Elysium Planitia',
     'insight.tagline': 'Mars\'ın içini dinledi. Sonunda güneş panellerini toz kapladı.',
-    'apollo11.place': 'Sükûnet Denizi',
+    'apollo11.place': 'Sakinlik Denizi',
     'apollo11.tagline': 'İnsanın Ay\'daki ilk adımları burada atıldı.',
     'apollo15.place': 'Hadley–Apennine',
     'apollo15.tagline': 'Ay\'da ilk ay arabası sürüşü burada, Hadley Vadisi\'nin kenarında başladı.',

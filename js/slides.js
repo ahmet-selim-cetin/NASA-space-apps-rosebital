@@ -1,9 +1,6 @@
 // Three-slide picture story shown when a beacon is clicked: beginning → big discovery → goodbye.
 // Images: NASA Image and Video Library / JPL Photojournal (public domain NASA imagery, credits below).
 // Slide texts are shortened from Team Rosebital's own stories (twins.js, sojourner.js, ingenuity.js).
-// Placeholder slide text until the team's story arrives.
-const PENDING = { tr: 'Bu hikâye Rosebital Takımı tarafından yazılacak.', en: 'This story will be written by Team Rosebital.' };
-
 export const SLIDES = {
   opportunity: [
     {
@@ -96,91 +93,90 @@ export const SLIDES = {
     },
   ],
 
-  // The five slide sets below keep a placeholder text until Team Rosebital's stories arrive.
-  // Dates and captions follow the NASA image pages named in each credit line (see README).
+    // Dates and captions follow the NASA image pages named in each credit line (see README).
   viking1: [
     {
       img: 'img/slides/viking1-1.jpg', credit: 'NASA/JPL · PIA00381',
-      tr: { when: '20 Temmuz 1976', title: "Mars'tan ilk fotoğraf", text: PENDING.tr, cap: "İnişten dakikalar sonra çekilen ilk fotoğraf: kayalar ve iniş aracının ayağı" },
-      en: { when: 'July 20, 1976', title: 'The first photo from Mars', text: PENDING.en, cap: "The first photo, taken minutes after landing: rocks and a footpad of the lander" },
+      tr: { when: '20 Temmuz 1976', title: "Mars'tan ilk fotoğraf", text: "Viking 1 paraşüt ve üç motorla Chryse Planitia'ya yumuşak iniş yaptı. Beş dakika içinde Mars yüzeyinden çekilen ilk fotoğrafı göndermeye başladı.", cap: "İnişten dakikalar sonra çekilen ilk fotoğraf: kayalar ve iniş aracının ayağı" },
+      en: { when: 'July 20, 1976', title: 'The first photo from Mars', text: 'Viking 1 landed softly in Chryse Planitia with a parachute and three engines. Within five minutes it began sending the first photo ever taken on Mars.', cap: "The first photo, taken minutes after landing: rocks and a footpad of the lander" },
     },
     {
       img: 'img/slides/viking1-2.jpg', credit: 'NASA/JPL · PIA00382',
-      tr: { when: 'Temmuz 1976', title: 'İlk panorama', text: PENDING.tr, cap: "Viking 1'in ilk panoraması: antenler, kayalar ve ufuktaki yayla" },
-      en: { when: 'July 1976', title: 'The first panorama', text: PENDING.en, cap: "Viking 1's first panorama: antennas, rocks and a plateau on the horizon" },
+      tr: { when: '1976 – 1982', title: 'Toprakta yaşam arayışı', text: 'Robot kolu toprağı kazdı, üç deney toprakta canlı aradı. Kesin bir yaşam kanıtı bulunamadı. 90 gün için tasarlanmıştı; 6 yıldan fazla çalıştı.', cap: "Viking 1'in ilk panoraması: antenler, kayalar ve ufuktaki yayla" },
+      en: { when: '1976 – 1982', title: 'Looking for life in the soil', text: 'Its robotic arm dug up soil, and three experiments searched it for life. No proof of life was found. Built for 90 days, it worked for more than 6 years.', cap: "Viking 1's first panorama: antennas, rocks and a plateau on the horizon" },
     },
     {
       img: 'img/slides/viking1-3.jpg', credit: 'NASA/JPL · PIA00565',
-      tr: { when: '11 Kasım 1982', title: 'Bağlantı koptu', text: PENDING.tr, cap: "Viking 1'in üzerindeki ABD bayrağı" },
-      en: { when: 'November 11, 1982', title: 'The link was lost', text: PENDING.en, cap: 'The U.S. flag on Viking 1' },
+      tr: { when: 'Bugün', title: 'Hâlâ orada', text: "11 Kasım 1982'de Dünya'dan giden hatalı bir komut bağlantıyı kopardı. Viking 1 hâlâ Chryse Planitia'nın batı yamacında, tozla kaplı duruyor.", cap: "Viking 1'in üzerindeki ABD bayrağı" },
+      en: { when: 'Today', title: 'Still there', text: 'On November 11, 1982, a wrong command from Earth cut the link. Viking 1 still stands on the western slope of Chryse Planitia, covered in dust.', cap: 'The U.S. flag on Viking 1' },
     },
   ],
   viking2: [
     {
       img: 'img/slides/viking2-1.jpg', credit: 'NASA/JPL · PIA00396',
-      tr: { when: '3 Eylül 1976', title: "Utopia Planitia'ya iniş", text: PENDING.tr, cap: "Viking 2'nin yüzeyden çektiği ilk fotoğraf" },
-      en: { when: 'September 3, 1976', title: 'Landing in Utopia Planitia', text: PENDING.en, cap: "Viking 2's first picture from the surface" },
+      tr: { when: '3 Eylül 1976', title: 'Yan yatmış bir iniş', text: "Viking 2, Mars'ın kuzeyindeki Utopia Planitia'ya indi. Bir ayağı kayaya bastığı için hafifçe yan yatmıştı. Ama hemen ilk fotoğrafını gönderdi.", cap: "Viking 2'nin yüzeyden çektiği ilk fotoğraf" },
+      en: { when: 'September 3, 1976', title: 'A tilted landing', text: 'Viking 2 landed in Utopia Planitia, in the north of Mars. One foot rested on a rock, so it leaned a little to one side. But it sent its first photo right away.', cap: "Viking 2's first picture from the surface" },
     },
     {
       img: 'img/slides/viking2-2.jpg', credit: 'NASA/JPL · PIA00573',
-      tr: { when: 'İniş yerinde', title: 'Kırağı', text: PENDING.tr, cap: "Viking 2'nin iniş yerinde kırağı" },
-      en: { when: 'At the landing site', title: 'Frost', text: PENDING.en, cap: 'Frost at the Viking 2 landing site' },
+      tr: { when: '1976 – 1980', title: 'Kırağı', text: 'Robot kolu toprağı kazdı ve yaşam aradı, ama kesin bir kanıt bulunamadı. Kış gelince kuzeydeki ovanın donla kaplandığını gördü.', cap: "Viking 2'nin iniş yerinde kırağı" },
+      en: { when: '1976 – 1980', title: 'Frost', text: 'Its robotic arm dug up soil and searched for life, but found no clear proof. When winter came, it saw the northern plain covered in frost.', cap: 'Frost at the Viking 2 landing site' },
     },
     {
       img: 'img/slides/viking2-3.jpg', credit: 'NASA · PIA04023',
-      tr: { when: '11 Nisan 1980', title: 'Pil bitti', text: PENDING.tr, cap: "Viking 2'nin iniş yeri, Mars Odyssey'in kızılötesi görüntüsünde (X işareti)" },
-      en: { when: 'April 11, 1980', title: 'The battery ran out', text: PENDING.en, cap: "The Viking 2 landing site in a Mars Odyssey infrared image (marked X)" },
+      tr: { when: 'Bugün', title: 'Hâlâ orada', text: "1.281 Mars günü çalıştı. Pilleri bitince 11 Nisan 1980'de sustu. Hâlâ Utopia Planitia'da, bir ayağı kayada, hafifçe yan yatmış duruyor.", cap: "Viking 2'nin iniş yeri, Mars Odyssey'in kızılötesi görüntüsünde (X işareti)" },
+      en: { when: 'Today', title: 'Still there', text: 'It worked for 1,281 Martian days. Its batteries failed, and on April 11, 1980 it fell silent. It still stands in Utopia Planitia, one foot on a rock.', cap: "The Viking 2 landing site in a Mars Odyssey infrared image (marked X)" },
     },
   ],
   insight: [
     {
       img: 'img/slides/insight-1.jpg', credit: 'NASA/JPL-Caltech · PIA22736',
-      tr: { when: '26 Kasım 2018', title: "Elysium Planitia'ya iniş", text: PENDING.tr, cap: "InSight'ın güneş panellerinden biri, Mars yüzeyinden görüntülendi" },
-      en: { when: 'November 26, 2018', title: 'Landing in Elysium Planitia', text: PENDING.en, cap: "One of InSight's solar panels, seen from the surface of Mars" },
+      tr: { when: '26 Kasım 2018', title: 'Dinlemeye geldi', text: "InSight'ın tekerlekleri yoktu. Elysium Planitia'nın düz ovasına indi. Görevi gezmek değil, olduğu yerde durup Mars'ın derinliklerini dinlemekti.", cap: "InSight'ın güneş panellerinden biri, Mars yüzeyinden görüntülendi" },
+      en: { when: 'November 26, 2018', title: 'Here to listen', text: 'InSight had no wheels. It landed on the flat plain of Elysium Planitia. Its job was not to roam, but to stay in one place and listen to the depths of Mars.', cap: "One of InSight's solar panels, seen from the surface of Mars" },
     },
     {
       img: 'img/slides/insight-2.jpg', credit: 'NASA/JPL-Caltech · PIA22956',
-      tr: { when: '19 Aralık 2018', title: 'Sismometre yere kondu', text: PENDING.tr, cap: 'Robot kol sismometreyi (SEIS) Mars yüzeyine yerleştirdi' },
-      en: { when: 'December 19, 2018', title: 'The seismometer touches down', text: PENDING.en, cap: "The robotic arm set the seismometer (SEIS) on the surface of Mars" },
+      tr: { when: 'Nisan 2019 – 2022', title: 'Mars depremleri', text: "Sismometre 1.300'den fazla sismik olay kaydetti. Dalgaları inceleyen bilim insanları Mars'ın katmanlarını gördü: kabuk, manto ve çekirdek.", cap: 'Robot kol sismometreyi (SEIS) Mars yüzeyine yerleştirdi (19 Aralık 2018)' },
+      en: { when: 'April 2019 – 2022', title: 'Marsquakes', text: 'The seismometer recorded more than 1,300 seismic events. By studying the waves, scientists could see the layers of Mars: crust, mantle and core.', cap: 'The robotic arm set the seismometer (SEIS) on the surface of Mars (December 19, 2018)' },
     },
     {
       img: 'img/slides/insight-3.jpg', credit: 'NASA/JPL-Caltech · PIA25287',
-      tr: { when: '15 Aralık 2022', title: 'Toza gömüldü', text: PENDING.tr, cap: "InSight'ın son özçekimi (24 Nisan 2022): toz güneş panellerini kapladı" },
-      en: { when: 'December 15, 2022', title: 'Buried in dust', text: PENDING.en, cap: "InSight's final selfie (April 24, 2022): dust covers its solar panels" },
+      tr: { when: '15 Aralık 2022', title: 'Son sinyal', text: "Toz güneş panellerini kapladı, enerjisi tükendi. 15 Aralık 2022'de son sinyalini gönderdi. Hâlâ Elysium Planitia'da, olduğu yerde duruyor.", cap: "InSight'ın son özçekimi (24 Nisan 2022): toz güneş panellerini kapladı" },
+      en: { when: 'December 15, 2022', title: 'The last signal', text: 'Dust covered its solar panels and its power ran out. It sent its last signal on December 15, 2022. It still stands in Elysium Planitia.', cap: "InSight's final selfie (April 24, 2022): dust covers its solar panels" },
     },
   ],
   apollo11: [
     {
       img: 'img/slides/apollo11-1.jpg', credit: 'NASA · 6900540',
-      tr: { when: '16 Temmuz 1969', title: 'Fırlatma', text: PENDING.tr, cap: "Apollo 11'i taşıyan Saturn V roketi Kennedy Uzay Merkezi'nden havalanıyor" },
-      en: { when: 'July 16, 1969', title: 'Launch', text: PENDING.en, cap: 'The Saturn V rocket carrying Apollo 11 lifts off from Kennedy Space Center' },
+      tr: { when: '16 Temmuz 1969', title: "Ay'a doğru", text: "Dev Saturn V roketi Florida'dan havalandı. İçinde Armstrong, Aldrin ve Collins vardı. Hedefleri, insanı ilk kez Ay'a indirmekti. Yolculuk üç gün sürecekti.", cap: "Apollo 11'i taşıyan Saturn V roketi Kennedy Uzay Merkezi'nden havalanıyor" },
+      en: { when: 'July 16, 1969', title: 'Off to the Moon', text: 'A Saturn V rocket lifted off from Florida with Armstrong, Aldrin and Collins on board. Their goal: to land people on the Moon for the first time.', cap: 'The Saturn V rocket carrying Apollo 11 lifts off from Kennedy Space Center' },
     },
     {
       img: 'img/slides/apollo11-2.jpg', credit: 'NASA · AS11-40-5903',
-      tr: { when: '20 Temmuz 1969', title: "Sükûnet Denizi'nde", text: PENDING.tr, cap: 'Buzz Aldrin, Eagle ay modülünün ayağının yanında; fotoğrafı Neil Armstrong çekti' },
-      en: { when: 'July 20, 1969', title: 'In the Sea of Tranquility', text: PENDING.en, cap: 'Buzz Aldrin beside a landing leg of the Eagle; Neil Armstrong took the photo' },
+      tr: { when: '20 Temmuz 1969', title: 'Kartal indi', text: 'Yakıt bitmek üzereyken Eagle Ay\'a indi. Armstrong ilk adımında şöyle dedi: "Bu, bir insan için küçük, insanlık için büyük bir adım."', cap: 'Buzz Aldrin, Eagle ay modülünün ayağının yanında; fotoğrafı Neil Armstrong çekti' },
+      en: { when: 'July 20, 1969', title: 'The Eagle has landed', text: 'With almost no fuel left, the Eagle landed. Armstrong\'s first step: "That\'s one small step for a man, one giant leap for mankind."', cap: 'Buzz Aldrin beside a landing leg of the Eagle; Neil Armstrong took the photo' },
     },
     {
       img: 'img/slides/apollo11-3.jpg', credit: 'NASA · AS11-40-5899',
-      tr: { when: '21 Temmuz 1969', title: 'Geride kalan plaket', text: PENDING.tr, cap: "Astronotların Ay'da bıraktığı plaket (ay modülünün inen kısmına tutturulmuş)" },
-      en: { when: 'July 21, 1969', title: 'The plaque left behind', text: PENDING.en, cap: 'The plaque the astronauts left on the Moon (attached to the lunar module descent stage)' },
+      tr: { when: 'Bugün', title: 'İzler hâlâ orada', text: "Eagle'ın alt kısmı ve bu plaket Ay'da kaldı. Ay'da rüzgâr da yağmur da yok. Armstrong ve Aldrin'in ayak izleri hâlâ orada.", cap: "Astronotların Ay'da bıraktığı plaket (ay modülünün inen kısmına tutturulmuş)" },
+      en: { when: 'Today', title: 'The footprints are still there', text: "The Eagle's lower half and this plaque stayed on the Moon. With no wind or rain, Armstrong's and Aldrin's footprints are still there.", cap: 'The plaque the astronauts left on the Moon (attached to the lunar module descent stage)' },
     },
   ],
   apollo15: [
     {
       img: 'img/slides/apollo15-1.jpg', credit: 'NASA · AS15-85-11425',
-      tr: { when: '30 Temmuz 1971', title: "Hadley Rille'in yanına iniş", text: PENDING.tr, cap: 'Hadley Rille manzarası, kuzeybatıya doğru (31 Temmuz 1971)' },
-      en: { when: 'July 30, 1971', title: 'Landing beside Hadley Rille', text: PENDING.en, cap: 'A view of Hadley Rille, looking northwest (July 31, 1971)' },
+      tr: { when: '30 Temmuz 1971', title: "Hadley'e iniş", text: 'Scott ve Irwin, Falcon ile Hadley Oluğu\'nun yanına indi. Scott ilk adımında şöyle dedi: "İnsan keşfetmeli. Bu, keşfin en büyüğüdür."', cap: 'Hadley Oluğu manzarası, kuzeybatıya doğru (31 Temmuz 1971)' },
+      en: { when: 'July 30, 1971', title: 'Landing at Hadley', text: 'Scott and Irwin landed the Falcon beside Hadley Rille. As he stepped out, Scott said: "Man must explore. And this is exploration at its greatest."', cap: 'A view of Hadley Rille, looking northwest (July 31, 1971)' },
     },
     {
       img: 'img/slides/apollo15-2.jpg', credit: 'NASA · AS15-85-11437',
-      tr: { when: '31 Temmuz 1971', title: "Ay'da ilk ay arabası", text: PENDING.tr, cap: 'David Scott, Hadley Delta yamacında; sağ önde ay arabası' },
-      en: { when: 'July 31, 1971', title: 'The first rover on the Moon', text: PENDING.en, cap: 'David Scott on the slope of Hadley Delta; the rover at right' },
+      tr: { when: '31 Temmuz – 2 Ağustos 1971', title: "Ay'da ilk araba", text: "Ay'da araç kullanan ilk insan Scott oldu. Üç çıkışta Ay Arabası'yla 27,9 km gittiler ve yaklaşık 4,1 milyar yıllık Genesis Kayası'nı buldular.", cap: 'David Scott, Hadley Delta yamacında; sağ önde ay arabası' },
+      en: { when: 'July 31 – August 2, 1971', title: 'The first car on the Moon', text: 'Scott became the first person to drive on the Moon. In three trips they covered 27.9 km and found the Genesis Rock, about 4.1 billion years old.', cap: 'David Scott on the slope of Hadley Delta; the rover at right' },
     },
     {
       img: 'img/slides/apollo15-3.jpg', credit: 'NASA · AS15-88-11866',
-      tr: { when: '1 Ağustos 1971', title: 'Bayrağın yanında', text: PENDING.tr, cap: 'James Irwin bayrağın yanında selam duruyor; arkada ay modülü ve ay arabası' },
-      en: { when: 'August 1, 1971', title: 'Beside the flag', text: PENDING.en, cap: 'James Irwin salutes beside the flag; the lunar module and rover behind' },
+      tr: { when: 'Bugün', title: 'Hâlâ orada', text: "Ay Arabası, Falcon'un kalkışını çekebilsin diye 160 metre uzağa park edildi. Hâlâ orada, Hadley Oluğu'nun yanında sessizce duruyor.", cap: 'James Irwin bayrağın yanında selam duruyor; arkada ay modülü ve ay arabası (1 Ağustos 1971)' },
+      en: { when: 'Today', title: 'Still there', text: "The rover was parked 160 metres away so its camera could film the Falcon's liftoff. It still stands quietly beside Hadley Rille.", cap: 'James Irwin salutes beside the flag; the lunar module and rover behind (August 1, 1971)' },
     },
   ],
 };

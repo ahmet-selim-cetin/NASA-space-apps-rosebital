@@ -38,9 +38,9 @@ Battery, solar-power and temperature values in the game are illustrations; the d
 
 ### The story / Hikâye
 
-The Spirit, Opportunity, Sojourner, Ingenuity and Surveyor 3 & Apollo 12 (Moon) stories were written by **Team Rosebital** in Turkish and translated into English.
+The Spirit, Opportunity, Sojourner, Ingenuity, Viking 1, Viking 2, InSight, Surveyor 3 & Apollo 12, Apollo 11 and Apollo 15 (Moon) stories were written by **Team Rosebital** in Turkish and translated into English.
 Their facts were checked against the NASA / JPL sources below.
-*Spirit, Opportunity, Sojourner, Ingenuity ve Surveyor 3 & Apollo 12 (Ay) hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
+*Spirit, Opportunity, Sojourner, Ingenuity, Viking 1, Viking 2, InSight, Surveyor 3 & Apollo 12, Apollo 11 ve Apollo 15 (Ay) hikâyeleri **Rosebital Takımı** tarafından Türkçe yazıldı ve İngilizceye çevrildi; bilgiler aşağıdaki NASA / JPL kaynaklarıyla kontrol edildi.*
 
 ### Built with / Kullanılan teknolojiler
 
@@ -62,6 +62,11 @@ js/twins.js         Spirit & Opportunity story (Team Rosebital)
 js/sojourner.js     Sojourner story (Team Rosebital)
 js/ingenuity.js     Ingenuity story (Team Rosebital)
 js/moon.js          Surveyor 3 & Apollo 12 Moon story (Team Rosebital)
+js/apollo11.js      Apollo 11 Moon story (Team Rosebital)
+js/apollo15.js      Apollo 15 Moon story (Team Rosebital)
+js/viking1.js       Viking 1 story (Team Rosebital)
+js/viking2.js       Viking 2 story (Team Rosebital)
+js/insight.js       InSight story (Team Rosebital)
 js/stories.js       stories for all rovers
 js/slides.js        3-slide picture stories
 js/i18n.js          English / Türkçe texts
@@ -107,6 +112,11 @@ Then open / Ardından aç: http://localhost:8000
 - Spirit: Husband Hill climb — https://science.nasa.gov/photojournal/looking-back-at-spirits-trail-to-the-summit/ ; stuck at "Troy" — https://www.jpl.nasa.gov/news/nasa-to-begin-attempts-to-free-sand-trapped-mars-rover/
 - Sojourner: NASA Facts sheet (coordinates, size, speed, rocks, end of mission) — https://mars.nasa.gov/internal_resources/815/ ; https://www.nasa.gov/history/25-years-ago-mars-pathfinder-launches-to-mars-to-deploy-sojourner-the-first-planetary-rover/
 - Ingenuity: first flight — https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/ ; Flight 72 investigation — https://www.jpl.nasa.gov/news/nasa-performs-first-aircraft-accident-investigation-on-another-world/
+- Apollo 11: mission timeline and length — NASA SP-4029 https://www.nasa.gov/wp-content/uploads/static/history/SP-4029/Apollo_11a_Summary.htm ; landing site — https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html ; samples (47.5 lb, about 21.5 kg) — https://www.lpi.usra.edu/lunar/missions/apollo/apollo_11/ . The team wrote 21.7 kg; the story says "about 21.5 kg". The Eagle's ascent stage was left in lunar orbit; its descent stage (with the plaque) is still on the Moon.
+- Apollo 15: Scott's words "Man must explore. And this is exploration at its greatest." — https://www.nasa.gov/history/50-years-ago-apollo-15-on-the-moon-at-hadley-apennine/ ; Seatbelt Basalt taken on EVA-1 — https://www.hq.nasa.gov/alsj/a15/a15.clsout1.html ; Genesis Rock (about 4.1 billion years), samples and traverses — https://www.lpi.usra.edu/lunar/missions/apollo/apollo_15/samples/ ; rover's final parking place about 160 m from the LM — https://lroc.im-ldi.com/images/1198 and https://www.hq.nasa.gov/alsj/alsj-LRVFinalParking.html ; "Great Scott" 9.6 kg rock — https://en.wikipedia.org/wiki/Great_Scott_(lunar_sample)
+- Viking 1: launch, orbit arrival (June 19, 1976), landing and the faulty command of November 11, 1982 — https://science.nasa.gov/mission/viking-1/ ; first photo sent within five minutes — https://www.nasa.gov/history/45-years-ago-viking-1-touches-down-on-mars/ ; orbiter switched off August 7, 1980 after 1,489 orbits — https://mars.nasa.gov/internal_resources/828/ ; first-days temperatures (about -85 °C to -29 °C) — https://www.science.org/doi/10.1126/science.193.4255.788 ; Opportunity broke the surface-longevity record in May 2010 — https://www.jpl.nasa.gov/news/nasas-mars-rovers-set-surface-longevity-record/
+- Viking 2: launch (Sept 9, 1975), orbit (Aug 7, 1976), landing in Utopia Planitia, 8.2° tilt, end (Apr 11, 1980, 1,281 Mars days) — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C ; orbiter (706 orbits, almost 16,000 images, off on July 25, 1978) — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083A ; frost at the landing site — https://photojournal.jpl.nasa.gov/catalog/PIA00573
+- InSight: mission facts — https://science.nasa.gov/mission/insight/ ; end of mission (last contact December 15, 2022; NASA announcement December 21, 2022; dust on the solar panels) — https://www.dlr.de/en/latest/news/2022/04/insight-mission-ends ; core smaller and denser (molten layer) — https://ethz.ch/en/news-and-events/eth-news/news/2023/10/mystery-of-the-martian-resolved.html ; possible solid inner core — https://www.nature.com/articles/s41586-025-09361-9
 
 ### Slide images / Slayt resimleri
 All images are NASA imagery from the NASA Image and Video Library (https://images.nasa.gov) and the JPL Photojournal, resized for the web. On the site, the credit line under each slide image links to the image's NASA page.
@@ -166,7 +176,6 @@ The side panel shows the landing-site coordinates exactly as printed on these pa
 
 Where the team's source sheet differed from the page it cites (Sojourner, Surveyor 3, Viking 1, Apollo 15, small rounding for Apollo 12 and Ingenuity), the value printed on the cited page was used. Masses on the sheet (Viking, InSight, Apollo 11 and 15) are not shown, because it is unclear what they measure.
 
-The Viking 1, Viking 2, InSight, Apollo 11 and Apollo 15 stories are placeholders until Team Rosebital writes them (`js/stories.js`, `js/slides.js`).
 
 ### Fonts and logo / Yazı tipleri ve logo
 - **Hacked** (intro title) — by David Libeau, licensed CC BY 4.0: https://www.fontspace.com/hacked-font-f28425 · `fonts/hacked-font/`
