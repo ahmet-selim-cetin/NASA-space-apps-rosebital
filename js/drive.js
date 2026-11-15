@@ -9,6 +9,27 @@ const TERRAIN_URL = 'models/terrain/';
 const EDGE_MARGIN = 8; // metres; the rover is turned back this far inside the edge of the team's terrain
 const EDGE_BLEND = 45; // metres; outside the terrain the ground eases into generated hills for the horizon
 const MAX_GRADE = 0.62; // rise/run the rover can climb (~32°); steeper ground stops it
+
+// ---------- Ingenuity: the last flight ----------
+const HELI_URL = 'models/ingenuity_mars_helicopter.glb'; // "Ingenuity Mars helicopter" by Cybertron B-127, CC BY 4.0
+const HELI_SPAN = 1.21; // metres, blade tip to blade tip
+// Timeline in flight-clock seconds, from NASA/JPL's account of flight 72 (January 18, 2024): the navigation system lost the
+// surface patterns about 20 s after takeoff, the descent began at 19 s and the helicopter was back on the ground at 32 s.
+// The game runs `K` times slower than that clock so there is time to look around. What the player chooses (height, direction)
+// changes the view, never the ending.
+const FLIGHT = {
+  K: 1.5,
+  start: { x: -38, z: -34, heading: -2.3 }, // facing the middle of the terrain
+  ceiling: 12, floor: 2, // metres above the ground; flight 72 reached 12 m
+  maxSpeed: 3, driftSpeed: 1.8, // m/s (game time)
+  navFade: [14, 20], descentAt: 19, landAt: 32,
+};
+const FLIGHT_LOG = [
+  { c: 0.4, key: 'fly.log.takeoff' },
+  { c: 10, key: 'fly.log.hover' },
+  { c: 15.5, key: 'fly.log.nav' },
+  { c: FLIGHT.descentAt, key: 'fly.log.descent' },
+];
 const MAX_SPEED = 1.6; // scene m/s (time-compressed; the real rover's top speed was 5 cm/s)
 const REAL_TOP_SPEED_CM = 5;
 const TRACK_SPACING = 0.22;
@@ -168,7 +189,11 @@ export class DriveSim {
     this.running = false;
     this.loaded = false;
     this.keys = new Set();
-    this.touch = { fwd: 0, turn: 0 };
+    this.touch = { fwd: 0, turn: 0, alt: 0 };
+    this.mission = 'opportunity'; // 'opportunity' (drive) | 'ingenuity' (flight)
+    this.envBuilt = false;
+    this.f = null; // flight state
+    this.dustAmount = { value: 0 }; // dust settled on the rover's panels (0..1)
     this.look = { yaw: 0, pitch: 0, dragging: false, idle: 0 };
     this.view = 'first'; // 'first' | 'chase'
 
@@ -224,23 +249,34 @@ export class DriveSim {
     return hit;
   }
 
+  // Pick the vehicle before load()/start(): 'opportunity' drives, 'ingenuity' flies.
+  setMission(id) { this.mission = id === 'ingenuity' ? 'ingenuity' : 'opportunity'; }
+
   async load(onProgress) {
-    if (this.loaded) return;
-    this.#initRenderer();
-    this.#buildSky();
-    this.#buildLights();
-    await loadField();
-    this.#buildTerrain();
-    this.#buildRocks();
-    this.#buildTracks();
-    this.#buildDust();
-    await this.#loadRover(onProgress);
-    this.#bindInput();
+    if (!this.envBuilt) {
+      this.#initRenderer();
+      this.#buildSky();
+      this.#buildLights();
+      await loadField();
+      this.#buildTerrain();
+      this.#buildRocks();
+      this.#buildTracks();
+      this.#buildDust();
+      this.#bindInput();
+      this.envBuilt = true;
+    }
+    if (this.mission === 'ingenuity') { if (!this.heli) await this.#loadHeli(onProgress); }
+    else if (!this.rover) await this.#loadRover(onProgress);
     this.resize();
     this.loaded = true;
   }
 
   start() {
+    if (this.mission === 'ingenuity') return this.#startFlight();
+    if (this.heli) this.heli.visible = false;
+    if (this.puffs) this.puffs.points.visible = false;
+    this.rover.visible = true;
+    this.hud?.fTelemetry && (this.hud.fTelemetry.style.opacity = '1');
     Object.assign(this.state, { x: 0, z: 0, heading: 0, speed: 0, trip: 0 });
     this.storm = { t: 0, next: 0, ended: false };
     this.look.yaw = 0; this.look.pitch = 0;
@@ -277,6 +313,7 @@ export class DriveSim {
 
   update(dt) {
     if (!this.running) return;
+    if (this.mission === 'ingenuity') return this.#updateFlight(dt);
     const s = this.state;
 
     // --- input ---
@@ -515,7 +552,6 @@ export class DriveSim {
     box = new THREE.Box3().setFromObject(model);
     model.position.y = -box.min.y;
     this.roverMaterials = [];
-    this.dustAmount = { value: 0 };
     model.traverse((o) => {
       if (!o.isMesh) return;
       o.castShadow = true;
@@ -555,6 +591,379 @@ export class DriveSim {
 
   // Pose the rover from the ground height under its four corner wheels, so it pitches and
   // rolls over slopes and rocks. dt === null snaps instantly (used when the drive starts).
+  async #loadHeli(onProgress) {
+    const gltf = await new GLTFLoader().loadAsync(HELI_URL, (e) => { if (e.total) onProgress?.(e.loaded / e.total); });
+    const model = gltf.scene;
+    let box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    model.scale.setScalar(HELI_SPAN / Math.max(size.x, size.z));
+    box = new THREE.Box3().setFromObject(model);
+    model.position.y = -box.min.y; // feet on the ground
+    model.traverse((o) => {
+      if (!o.isMesh) return;
+      o.castShadow = true;
+      o.receiveShadow = true;
+      // like the rover: near-mirror metal renders black without an environment map
+      o.material.metalness = Math.min(o.material.metalness, 0.3);
+      o.material.roughness = Math.max(o.material.roughness, 0.6);
+      o.material.metalnessMap = null;
+      o.material.roughnessMap = null;
+    });
+
+    this.heli = new THREE.Group();
+    this.heli.add(model);
+    this.scene.add(this.heli);
+    this.heli.updateMatrixWorld(true);
+
+    // The two rotors spin about their own hubs: find each one's flat axis and give it a pivot at its centre.
+    this.rotors = [];
+    const nodes = [];
+    model.traverse((o) => { if (/^rotors_0[12]/.test(o.name)) nodes.push(o); });
+    nodes.forEach((node, i) => {
+      const b = new THREE.Box3().setFromObject(node);
+      const sz = b.getSize(new THREE.Vector3()), ctr = b.getCenter(new THREE.Vector3());
+      const k = sz.x <= sz.y && sz.x <= sz.z ? 'x' : sz.y <= sz.z ? 'y' : 'z'; // the thin direction is the spin axis
+      const parent = node.parent;
+      const pivot = new THREE.Object3D();
+      pivot.position.copy(parent.worldToLocal(ctr.clone()));
+      parent.add(pivot);
+      pivot.updateMatrixWorld(true);
+      pivot.attach(node);
+      const axis = new THREE.Vector3(k === 'x' ? 1 : 0, k === 'y' ? 1 : 0, k === 'z' ? 1 : 0)
+        .transformDirection(new THREE.Matrix4().copy(parent.matrixWorld).invert());
+      this.rotors.push({ pivot, axis, dir: i % 2 ? -1 : 1 });
+    });
+  }
+
+  // ---------- Flight 72 ----------
+  #startFlight() {
+    const F = FLIGHT;
+    if (this.rover) this.rover.visible = false;
+    this.heli.visible = true;
+    this.tracks.count = 0;
+    for (const r of this.rotors) { r.pivot.scale.setScalar(1); r.pivot.rotation.set(0, 0, 0); }
+    this.f = {
+      t: 0, x: F.start.x, z: F.start.z, alt: 0, heading: F.start.heading, speed: 0, target: 8, spin: 0, spinAngle: 0,
+      drift: null, descentT0: -1, descentAlt: 0, crashed: false, impactT: 0, commsT: -1, logNext: 0, ended: false, nav: 1,
+      tilt: { p: 0, r: 0 }, bounce: 0, vx: 0, vz: 0, slide: null, camTilt: { p: 0, r: 0 }, unstable: 0, wob: { p: 0, r: 0 }, burst: false,
+    };
+    this.look.yaw = 0; this.look.pitch = 0;
+    this.fSpeed = 0;
+    this.#resetPuffs();
+    // a clear, calm sky: none of the storm
+    this.haze.copy(this.hazeClear);
+    this.scene.fog.density = 0.0055;
+    this.skyUniforms.horizon.value.copy(this.haze);
+    this.skyUniforms.zenith.value.copy(this.zenithClear);
+    this.skyUniforms.stormCol.value.set(0x5c3a22);
+    this.skyUniforms.front.value = 0;
+    this.skyUniforms.sunStrength.value = 1;
+    this.sun.intensity = 2.4;
+    this.hemi.intensity = 1.15;
+    this.dust.visible = false;
+    this.dustAmount.value = 0;
+    this.windLevel = 0.15;
+    const h = this.hud;
+    if (h?.fxDust) {
+      h.fxDust.style.opacity = '0'; h.fxNoise.style.opacity = '0'; h.fxBlack.style.height = '0%';
+      h.telemetry.style.opacity = '1';
+      if (h.fTelemetry) h.fTelemetry.style.opacity = '1';
+    }
+    this.running = true;
+    this.container.classList.add('active');
+    this.resize();
+    this.#poseHeli(0);
+    this.#updateFlightCamera(0);
+  }
+
+  #updateFlight(dt) {
+    const F = FLIGHT, f = this.f;
+    const gdt = dt * this.timeScale;
+    f.t += gdt;
+    const c = f.t / F.K; // the flight clock, in the seconds NASA reports
+
+    // --- what the player asks for (only until the descent starts) ---
+    const k = this.keys;
+    const fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0) + this.touch.fwd;
+    const turn = (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0) - (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) + this.touch.turn;
+    const lift = (k.has('Space') ? 1 : 0) - (k.has('ShiftLeft') || k.has('ShiftRight') ? 1 : 0) + this.touch.alt;
+    const control = c < F.descentAt && !f.crashed;
+
+    f.spin = f.crashed ? Math.max(0, f.spin - gdt * 0.9) : Math.min(1, f.t / 2.5);
+    f.nav = f.crashed ? 0 : 1 - THREE.MathUtils.smoothstep(c, F.navFade[0], F.navFade[1]);
+
+    // --- altitude ---
+    let tau = 0; // 0..1 through the descent
+    if (control) {
+      f.target = THREE.MathUtils.clamp(f.target + lift * 3 * gdt, F.floor, F.ceiling);
+      if (f.t > 2.5) f.alt += THREE.MathUtils.clamp(f.target - f.alt, -1.5 * gdt, 1.5 * gdt);
+    } else if (!f.crashed) {
+      // no patterns to follow: the descent starts now and ends at the 32 s mark, whatever the height.
+      // It starts slowly and speeds up (alt ~ 1 - tau^2.5), so the ground arrives fast.
+      if (f.descentT0 < 0) { f.descentT0 = f.t; f.descentAlt = f.alt; }
+      tau = THREE.MathUtils.clamp((f.t - f.descentT0) / ((F.landAt - F.descentAt) * F.K), 0, 1);
+      f.alt = f.descentAlt * (1 - tau ** 2.5);
+      if (f.alt <= 1 && f.commsT < 0) { f.commsT = f.t; this.onLog?.('fly.log.comms'); }
+      if (f.alt <= 0) this.#impact();
+    }
+
+    // it gets shakier as the navigation loses its patterns, and more so on the way down
+    f.unstable = f.crashed ? 0 : Math.min(1, (1 - f.nav) * 0.5 + tau * 0.6);
+
+    // --- horizontal motion ---
+    let vx = 0, vz = 0;
+    if (control) {
+      const target = THREE.MathUtils.clamp(fwd, -0.5, 1) * F.maxSpeed;
+      f.speed += THREE.MathUtils.clamp(target - f.speed, -2 * gdt, 2 * gdt);
+      f.heading += turn * 0.9 * gdt;
+      vx = -Math.sin(f.heading) * f.speed; vz = -Math.cos(f.heading) * f.speed;
+    } else if (!f.crashed) {
+      // The navigation system has lost its sense of motion. The helicopter keeps going the way it was moving (or the way it
+      // faces, if it was hovering) and its speed picks up from where it is now, so nothing jumps.
+      if (!f.drift) {
+        const sp0 = Math.hypot(f.vx, f.vz);
+        const d0x = sp0 > 0.3 ? f.vx / sp0 : -Math.sin(f.heading), d0z = sp0 > 0.3 ? f.vz / sp0 : -Math.cos(f.heading);
+        let dx = d0x, dz = d0z, sp = Math.max(sp0, F.driftSpeed);
+        // The whole drift covers about 30 times its starting speed (plus what its current speed still carries it).
+        // Keep the touchdown inside the terrain, so it never runs into the edge: slow it down, and if the edge is too
+        // close, turn it toward the middle.
+        const lx = field.halfW - EDGE_MARGIN, lz = field.halfD - EDGE_MARGIN;
+        const room = (ux, uz) => Math.min(ux > 0 ? (lx - f.x) / ux : ux < 0 ? (-lx - f.x) / ux : Infinity, uz > 0 ? (lz - f.z) / uz : uz < 0 ? (-lz - f.z) / uz : Infinity);
+        const allowed = (ux, uz) => (room(ux, uz) - 4 - (sp0 * sp0) / 2.6) / 30; // fastest start speed that still lands inside
+        const m = Math.hypot(f.x, f.z) || 1, cx = -f.x / m, cz = -f.z / m; // toward the middle
+        for (let k = 1; k <= 8 && allowed(dx, dz) < 0.8; k++) {
+          const w = k / 8;
+          dx = d0x * (1 - w) + cx * w; dz = d0z * (1 - w) + cz * w;
+          const n = Math.hypot(dx, dz);
+          if (n < 0.2) { dx = cx; dz = cz; } else { dx /= n; dz /= n; }
+        }
+        sp = THREE.MathUtils.clamp(allowed(dx, dz), 0.5, sp);
+        f.drift = { x: dx, z: dz, sp };
+      }
+      const fast = 1 + 0.94 * tau; // the error in its speed estimate grows: ~1.8 m/s becomes ~3.5 m/s at touchdown
+      const tx = f.drift.x * f.drift.sp * fast, tz = f.drift.z * f.drift.sp * fast, a = 1.3 * gdt; // m/s per second
+      vx = f.vx + THREE.MathUtils.clamp(tx - f.vx, -a, a);
+      vz = f.vz + THREE.MathUtils.clamp(tz - f.vz, -a, a);
+    } else {
+      if (!f.slide) f.slide = { x: f.vx, z: f.vz };
+      const slide = Math.max(0, 1 - (f.t - f.impactT) * 0.9); // skids over the sand before it stops
+      vx = f.slide.x * slide; vz = f.slide.z * slide;
+    }
+    f.vx = vx; f.vz = vz;
+    f.x += vx * gdt; f.z += vz * gdt;
+    const lx = field.halfW - EDGE_MARGIN, lz = field.halfD - EDGE_MARGIN;
+    f.x = THREE.MathUtils.clamp(f.x, -lx, lx); f.z = THREE.MathUtils.clamp(f.z, -lz, lz);
+    this.fSpeed = Math.hypot(vx, vz);
+
+    // --- the story ---
+    while (f.logNext < FLIGHT_LOG.length && c >= FLIGHT_LOG[f.logNext].c) this.onLog?.(FLIGHT_LOG[f.logNext++].key);
+    this.#flightFx(f);
+
+    this.#poseHeli(dt);
+    this.#updatePuffs(dt);
+    this.#updateFlightCamera(dt);
+    this.#updateFlightHud(c);
+
+    this.sun.position.copy(this.heli.position).addScaledVector(this.sunDir, 60);
+    this.sun.target.position.copy(this.heli.position);
+    this.sky.position.copy(this.camera.getWorldPosition(this._v1));
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  // The hard landing: it hits a sand ripple at speed, pitches and rolls, and the blades break.
+  #impact() {
+    const f = this.f;
+    f.crashed = true;
+    f.impactT = f.t;
+    f.bounce = 0.6;
+    f.tilt.p = 0; f.tilt.r = 0;
+    this.onLog?.('fly.log.hard');
+    for (const r of this.rotors) { r.pivot.scale.setScalar(0.7); r.pivot.rotation.x += 0.3 * r.dir; r.pivot.rotation.z -= 0.2 * r.dir; }
+  }
+
+  // Static, then the picture shuts: contact is lost 1 m above the ground; the end follows a few seconds after the impact.
+  #flightFx(f) {
+    const h = this.hud, t = f.t;
+    const noise = f.commsT >= 0 ? ramp(f.commsT, f.commsT + 3, t) : 0;
+    const black = f.crashed ? ramp(f.impactT + 2.5, f.impactT + 4.5, t) : 0;
+    if (h?.fxNoise) {
+      h.fxNoise.style.opacity = (noise * 0.28).toFixed(3);
+      if (noise > 0.01) this.#drawNoise(h.fxNoise);
+      h.fxBlack.style.height = `${black * 100}%`;
+      const fade = f.commsT >= 0 ? 1 - ramp(f.commsT, f.commsT + 4, t) : 1;
+      h.fTelemetry.style.opacity = fade.toFixed(3);
+    }
+    this.windLevel = 0.15;
+    this.onWind?.(0.18, f.crashed ? 1 - ramp(f.impactT + 1, f.impactT + 3.5, t) : 1);
+    if (f.crashed && !f.ended && t >= f.impactT + 5) { f.ended = true; this.onEnd?.(); }
+  }
+
+  #poseHeli(dt) {
+    const f = this.f;
+    const ground = terrainHeight(f.x, f.z);
+    // slope of the sand under it
+    const sx = terrainHeight(f.x + 0.6, f.z) - terrainHeight(f.x - 0.6, f.z);
+    const sz = terrainHeight(f.x, f.z + 0.6) - terrainHeight(f.x, f.z - 0.6);
+    if (f.crashed) {
+      const k = Math.min(1, (f.t - f.impactT) / 0.5);
+      const ease = 1 - (1 - k) * (1 - k);
+      f.tilt.p = 1.0 * ease; f.tilt.r = 0.7 * ease; // nose down, rolled onto one side
+      f.bounce = Math.max(0, f.bounce - (dt || 0) * 0.35);
+    }
+    const lean = THREE.MathUtils.clamp(this.fSpeed * 0.04, 0, 0.12); // leans into the way it is going
+    const amp = 0.3 * f.unstable; // rocking back and forth, growing as it loses its way
+    f.wob.p = Math.sin(f.t * 7.1) * amp; f.wob.r = Math.sin(f.t * 5.3 + 1.2) * amp * 1.2;
+    const sy = f.crashed ? ground + 0.25 : ground + f.alt;
+    this.heli.position.set(f.x, sy + (f.crashed ? f.bounce * Math.max(0, Math.sin((f.t - f.impactT) * 6)) : 0), f.z);
+    const e = new THREE.Euler(
+      f.crashed ? f.tilt.p - sz * 0.5 : -lean + f.wob.p,
+      f.heading,
+      f.crashed ? f.tilt.r + sx * 0.5 : f.wob.r,
+      'YXZ',
+    );
+    this.heli.quaternion.setFromEuler(e);
+    for (const r of this.rotors) {
+      if (!f.crashed) { r.pivot.rotation.set(0, 0, 0); r.pivot.rotateOnAxis(r.axis, f.spinAngle * r.dir); }
+    }
+    if (dt) f.spinAngle += f.spin * 38 * dt * (1 + 0.3 * f.unstable * Math.sin(f.t * 9)); // spun for show: the real rotors turn 2,400 times a minute
+    this.heli.visible = this.view !== 'first'; // seen from outside only
+  }
+
+  // ---------- Sand dust: the rotor wash near the ground, and the cloud when it hits ----------
+  #buildPuffs() {
+    const N = 320;
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
+    geo.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(N), 1));
+    geo.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(N), 1));
+    const uniforms = { uScale: { value: 600 }, uColor: { value: new THREE.Color(0xcfa27a) } };
+    const mat = new THREE.ShaderMaterial({
+      uniforms, transparent: true, depthWrite: false, fog: false,
+      vertexShader: /* glsl */`
+        attribute float aSize; attribute float aAlpha; uniform float uScale; varying float vA;
+        void main() { vA = aAlpha; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = aSize * uScale / max(-mv.z, 0.1); gl_Position = projectionMatrix * mv; }`,
+      fragmentShader: /* glsl */`
+        uniform vec3 uColor; varying float vA;
+        void main() {
+          float d = length(gl_PointCoord - 0.5) * 2.0;
+          float a = smoothstep(1.0, 0.0, d) * vA;
+          if (a < 0.003) discard;
+          gl_FragColor = vec4(uColor, a);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`,
+    });
+    const points = new THREE.Points(geo, mat);
+    points.frustumCulled = false;
+    this.scene.add(points);
+    this.puffs = { N, points, uniforms, next: 0, vel: new Float32Array(N * 3), life: new Float32Array(N), max: new Float32Array(N), size0: new Float32Array(N), grow: new Float32Array(N), acc: 0, buf: new THREE.Vector2() };
+  }
+
+  #resetPuffs() {
+    if (!this.puffs) this.#buildPuffs();
+    const P = this.puffs;
+    P.life.fill(0); P.next = 0; P.acc = 0;
+    P.points.geometry.attributes.aAlpha.array.fill(0);
+    P.points.geometry.attributes.aAlpha.needsUpdate = true;
+    P.points.visible = true;
+  }
+
+  #emitPuff(x, y, z, vx, vy, vz, life, size, grow) {
+    const P = this.puffs, i = P.next++ % P.N, pos = P.points.geometry.attributes.position.array;
+    pos[i * 3] = x; pos[i * 3 + 1] = y; pos[i * 3 + 2] = z;
+    P.vel[i * 3] = vx; P.vel[i * 3 + 1] = vy; P.vel[i * 3 + 2] = vz;
+    P.life[i] = P.max[i] = life; P.size0[i] = size; P.grow[i] = grow;
+  }
+
+  #updatePuffs(dt) {
+    const P = this.puffs, f = this.f;
+    if (!P || !dt) return;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const ground = terrainHeight(f.x, f.z);
+    // rotor wash: sand is blown outward whenever it is within a few metres of the ground (takeoff and the fall)
+    if (!f.crashed && f.spin > 0.5 && f.alt < 3.5) {
+      P.acc += 90 * (1 - f.alt / 3.5) * dt;
+      while (P.acc >= 1) {
+        P.acc -= 1;
+        const a = Math.random() * Math.PI * 2, sp = rnd(1.5, 3.5), r = rnd(0.2, 0.5);
+        this.#emitPuff(f.x + Math.cos(a) * r, ground + 0.05, f.z + Math.sin(a) * r, Math.cos(a) * sp, rnd(0.3, 0.9), Math.sin(a) * sp, rnd(1, 1.8), rnd(0.35, 0.6), 2);
+      }
+    }
+    // the hit: one big cloud, then a trail of dust while it skids
+    if (f.crashed && !f.burst) {
+      f.burst = true;
+      for (let k = 0; k < 120; k++) {
+        const a = Math.random() * Math.PI * 2, sp = rnd(2, 6), r = rnd(0, 0.5);
+        this.#emitPuff(f.x + Math.cos(a) * r, ground + 0.1, f.z + Math.sin(a) * r, Math.cos(a) * sp + f.vx * 0.5, rnd(1, 3.5), Math.sin(a) * sp + f.vz * 0.5, rnd(1.8, 3.4), rnd(0.6, 1.1), 2.5);
+      }
+    } else if (f.crashed && Math.hypot(f.vx, f.vz) > 0.4) {
+      P.acc += 40 * dt;
+      while (P.acc >= 1) {
+        P.acc -= 1;
+        this.#emitPuff(f.x + rnd(-0.3, 0.3), ground + 0.1, f.z + rnd(-0.3, 0.3), rnd(-0.8, 0.8) - f.vx * 0.2, rnd(0.3, 1), rnd(-0.8, 0.8) - f.vz * 0.2, rnd(1, 2), rnd(0.4, 0.7), 2);
+      }
+    }
+    // move, spread and fade
+    const g = P.points.geometry.attributes, pos = g.position.array, size = g.aSize.array, alpha = g.aAlpha.array;
+    for (let i = 0; i < P.N; i++) {
+      if (P.life[i] <= 0) { alpha[i] = 0; continue; }
+      P.life[i] -= dt;
+      const k = Math.max(0, P.life[i] / P.max[i]); // 1 -> 0
+      const drag = Math.max(0, 1 - 1.6 * dt);
+      P.vel[i * 3] *= drag; P.vel[i * 3 + 1] = P.vel[i * 3 + 1] * drag + 0.15 * dt; P.vel[i * 3 + 2] *= drag;
+      pos[i * 3] += P.vel[i * 3] * dt; pos[i * 3 + 1] += P.vel[i * 3 + 1] * dt; pos[i * 3 + 2] += P.vel[i * 3 + 2] * dt;
+      size[i] = P.size0[i] * (1 + P.grow[i] * (1 - k));
+      alpha[i] = 0.5 * k * Math.min(1, (1 - k) * 8 + 0.2); // quick fade in, slow fade out
+    }
+    g.position.needsUpdate = true; g.aSize.needsUpdate = true; g.aAlpha.needsUpdate = true;
+    P.uniforms.uScale.value = (this.renderer.getDrawingBufferSize(P.buf).y / 2) / Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
+  }
+
+  #updateFlightCamera(dt) {
+    const L = this.look, f = this.f;
+    const falling = f.descentT0 >= 0 || f.crashed; // keep the view where the player left it from the descent on
+    if (!L.dragging) {
+      L.idle += dt;
+      if (L.idle > 2.5 && !falling) { const k = Math.min(1, dt * 1.2); L.yaw -= L.yaw * k; L.pitch -= L.pitch * k; }
+    }
+    // the picture leans into the crash gradually instead of snapping
+    const ct = f.camTilt, kc = Math.min(1, (dt || 0) * 4);
+    ct.p += ((f.crashed ? f.tilt.p * 0.35 : 0) - ct.p) * kc;
+    ct.r += ((f.crashed ? f.tilt.r * 0.4 : 0) - ct.r) * kc;
+    const p = this.heli.position;
+    if (this.view === 'first') {
+      const shake = f.crashed ? Math.max(0, 1 - (f.t - f.impactT) * 0.5) * 0.07 : 0.0015 * f.spin;
+      this.camera.position.set(p.x, p.y + 0.25, p.z);
+      const e = new THREE.Euler(
+        L.pitch - 0.45 + ct.p + f.wob.p * 0.5 + (Math.random() - 0.5) * shake,
+        f.heading + L.yaw + (Math.random() - 0.5) * shake,
+        ct.r + f.wob.r * 0.5,
+        'YXZ',
+      );
+      this.camera.quaternion.setFromEuler(e);
+    } else {
+      const yaw = f.heading + L.yaw;
+      const pitch = THREE.MathUtils.clamp(0.3 - L.pitch, 0.08, 1.2);
+      const dist = 3.4;
+      this.camera.position.set(p.x + Math.sin(yaw) * Math.cos(pitch) * dist, p.y + 0.4 + Math.sin(pitch) * dist, p.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+      const groundY = terrainHeight(this.camera.position.x, this.camera.position.z) + 0.3;
+      if (this.camera.position.y < groundY) this.camera.position.y = groundY;
+      this.camera.lookAt(p.x, p.y + 0.2, p.z);
+    }
+  }
+
+  #updateFlightHud(c) {
+    const h = this.hud, f = this.f;
+    if (!h?.fClock) return;
+    h.fNav.textContent = Math.round(f.nav * 100);
+    h.fNavBar.style.width = `${f.nav * 100}%`;
+    h.fClock.textContent = Math.min(c, FLIGHT.landAt).toFixed(1);
+    h.fAlt.textContent = f.alt.toFixed(1);
+    h.fSpeed.textContent = this.fSpeed.toFixed(1);
+    const deg = ((THREE.MathUtils.radToDeg(-f.heading) % 360) + 360) % 360;
+    h.fHeading.textContent = `${String(Math.round(deg) % 360).padStart(3, '0')}° ${['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(deg / 45) % 8]}`;
+  }
+
   #placeRover(dt) {
     const s = this.state;
     const fx = -Math.sin(s.heading), fz = -Math.cos(s.heading); // forward
@@ -752,7 +1161,7 @@ export class DriveSim {
   }
 
   #bindInput() {
-    const driveKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    const driveKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight'];
     window.addEventListener('keydown', (e) => {
       if (!this.running) return;
       if (driveKeys.includes(e.code)) { this.keys.add(e.code); e.preventDefault(); }

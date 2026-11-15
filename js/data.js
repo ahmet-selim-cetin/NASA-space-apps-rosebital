@@ -47,7 +47,8 @@ export const ROVERS = [
     lat: 18.4447,
     lon: 77.4508,
     color: '#8affc1',
-    playable: false,
+    playable: true,
+    playKey: 'panel.fly', // button label (default: panel.drive)
     stats: { landed: '2021-02-18', last: '2024-01-18', lastLabel: 'panel.lastFlight', distanceKm: 17, planned: 5, lasted: 72, unit: 'flights' },
     coords: {
       lat: ['18', '26', '41', 'N'], lon: ['77', '27', '04', 'E'], dec: ['18.44486', '77.45102'],

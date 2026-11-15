@@ -100,6 +100,8 @@ function fillPanel(rover) {
   $('p-name').textContent = rover.name;
   $('p-tagline').textContent = t(`${rover.id}.tagline`);
   $('p-drive').hidden = !rover.playable;
+  $('p-drive').firstElementChild.dataset.i18n = rover.playKey || 'panel.drive';
+  $('p-drive').firstElementChild.textContent = t(rover.playKey || 'panel.drive');
   panel.style.setProperty('--c', rover.color);
 
   // Sites with their own fact list (the Moon's shared beacon) use it instead of the rover numbers.
@@ -213,6 +215,8 @@ function renderSlide() {
   $('sl-story').hidden = !last;
   $('sl-story').textContent = t(STORIES[selected.id] ? 'slides.story' : 'slides.info');
   $('sl-drive').hidden = !(last && selected.playable);
+  $('sl-drive').dataset.i18n = selected.playKey || 'panel.drive';
+  $('sl-drive').textContent = t(selected.playKey || 'panel.drive');
   // restart the entrance animation
   for (const el of [img, slidesEl.querySelector('.sl-body')]) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
 }
@@ -277,6 +281,8 @@ const drive = new DriveSim($('drive'), {
   speed: $('h-speed'), speedBar: $('h-speed-bar'), heading: $('h-heading'), trip: $('h-trip'),
   battery: $('h-battery'), batteryBar: $('h-battery-bar'), solar: $('h-solar'), tau: $('h-tau'), temp: $('h-temp'),
   sol: $('h-sol'), telemetry: $('h-telemetry'), fxDust: $('fx-dust'), fxNoise: $('fx-noise'), fxBlack: $('fx-black'),
+  // Ingenuity flight
+  fTelemetry: $('f-telemetry'), fNav: $('f-nav'), fNavBar: $('f-nav-bar'), fClock: $('f-clock'), fAlt: $('f-alt'), fSpeed: $('f-speed'), fHeading: $('f-heading'),
 });
 const wind = new WindAudio();
 const ending = $('ending');
@@ -307,12 +313,41 @@ async function fadeTo(text) {
   await wait(900);
 }
 
+// What the game screen says for each vehicle: the Opportunity drive or the Ingenuity flight.
+const MISSIONS = {
+  opportunity: {
+    title: 'MER-B · OPPORTUNITY', location: 'drive.location', sol: true, loading: 'drive.loading', card: 'drive.card', help: 'drive.help',
+    end: { kicker: 'end.kicker', title: 'end.title', body: 'end.body', closing: 'end.closing', again: 'end.again' },
+    stats: ['90 <span data-i18n="panel.sols"></span>', '<span data-i18n="end.sols"></span> <span data-i18n="panel.sols"></span>', '<span data-i18n="end.km"></span> km'],
+  },
+  ingenuity: {
+    title: 'INGENUITY · MARS HELICOPTER', location: 'fly.location', sol: false, loading: 'fly.loading', card: 'fly.card', help: 'fly.help',
+    end: { kicker: 'fly.end.kicker', title: 'fly.end.title', body: 'fly.end.body', closing: 'fly.end.closing', again: 'fly.end.again' },
+    stats: ['<span data-i18n="fly.stat.planned"></span>', '<span data-i18n="fly.stat.lasted"></span>', '<span data-i18n="fly.stat.distance"></span>'],
+  },
+};
+let mission = 'opportunity';
+function setMissionUI(id) {
+  mission = id;
+  const m = MISSIONS[id];
+  $('h-title').textContent = m.title;
+  $('h-location').dataset.i18n = m.location;
+  $('h-sol-wrap').hidden = !m.sol;
+  $('drive-help').dataset.i18n = m.help;
+  for (const [k, key] of Object.entries(m.end)) { const el = $({ kicker: 'e-kicker', title: 'e-title', body: 'e-body', closing: 'e-closing', again: 'e-again-label' }[k]); el.dataset.i18n = key; }
+  ['e-planned', 'e-lasted', 'e-distance'].forEach((eid, i) => { $(eid).innerHTML = m.stats[i]; });
+  document.body.classList.toggle('flying', id === 'ingenuity');
+  drive.setMission(id);
+  applyI18n();
+}
+
 async function startDrive() {
   if (switching || drive.running) return;
   switching = true;
   try {
+    setMissionUI(selected && MISSIONS[selected.id] ? selected.id : mission);
     wind.start(); // inside the click, so the browser allows sound
-    await fadeTo(t('drive.loading'));
+    await fadeTo(t(MISSIONS[mission].loading));
     await drive.load();
     $('d-log').replaceChildren();
     hideEnding();
@@ -320,7 +355,7 @@ async function startDrive() {
     document.body.classList.add('driving');
     drive.start();
     if (new URLSearchParams(location.search).get('cam') === 'chase') drive.toggleView();
-    $('fade-text').textContent = t('drive.card');
+    $('fade-text').textContent = t(MISSIONS[mission].card);
     await wait(2600);
     fade.classList.remove('on');
     $('drive-help').classList.remove('hidden');
@@ -342,7 +377,7 @@ async function stopDrive() {
   drive.stop();
   wind.stop();
   hideEnding();
-  document.body.classList.remove('driving');
+  document.body.classList.remove('driving', 'flying');
   globe.setActive(true);
   globe.resize();
   fade.classList.remove('on');

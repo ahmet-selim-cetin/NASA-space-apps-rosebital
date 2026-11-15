@@ -394,3 +394,11 @@ body.driving .world-switch { display: none; }
 .stats dd.coord small { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .stats dd.coord .coord-src { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 700; color: #e8b98f; text-underline-offset: 3px; text-decoration-color: rgba(232, 185, 143, 0.45); }
 .stats dd.coord .coord-src:hover, .stats dd.coord .coord-src:focus-visible { color: #ffd2a8; text-decoration-color: currentColor; }
+
+/* ---------- Ingenuity flight ---------- */
+.hud-flight { display: none; }
+body.flying .hud-flight { display: grid; }
+body.flying #h-telemetry { display: none; }
+.flight-only { display: none; }
+body.flying .flight-only { display: flex; }
+#f-nav-bar { background: #8affc1; }

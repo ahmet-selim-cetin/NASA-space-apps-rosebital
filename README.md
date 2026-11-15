@@ -28,6 +28,7 @@ gerçek NASA fotoğraflarıyla üç sayfalık bir resimli hikâye, tarihleri ve 
 3. **Full story / Hikâyenin tamamı** — a side panel with mission numbers and the whole story as a timeline.
    *Görev bilgileri ve hikâyenin tamamı yan panelde, zaman çizelgesi olarak.*
 4. **Drive the last days / Son günleri sür** (Opportunity) — W A S D or arrow keys to drive, drag to look, C to change camera.
+5. **Fly the last flight / Son uçuşu yap** (Ingenuity) — W S to move, A D to turn, Space / Shift to go higher / lower, drag to look, C to change camera. You choose the height and the direction; the ending never changes (see below).
    In about two minutes the storm grows: dust fills the sky, solar power and battery fall, the rover slows down and finally goes silent.
    *Yaklaşık iki dakikada fırtına büyür: gökyüzü tozla dolar, güneş gücü ve batarya düşer, gezgin yavaşlar ve sonunda susar.*
 
@@ -53,7 +54,7 @@ index.html          page
 css/style.css       styles
 js/main.js          app wiring (globe, slides, panel, game)
 js/globe.js         3D Mars globe and beacons
-js/drive.js         first-person drive and dust storm
+js/drive.js         first-person Opportunity drive (dust storm) and Ingenuity flight 72
 js/audio.js         wind sound
 js/data.js          mission numbers and coordinates
 js/twins.js         Spirit & Opportunity story (Team Rosebital)
@@ -158,3 +159,10 @@ https://docs.google.com/spreadsheets/d/1B27CVgnJ7uxL9cvEWX8QfvTVxY87lROzzPXS3N42
 - Sojourner — Sketchfab: https://sketchfab.com/3d-models/sojourner-mars-rover-7f135874ddd34f8f98904b53a2c178e1
 - `models/Mars(yeni).glb` — stylised Mars sculpt by Team Rosebital (not used on the globe; the globe uses the NASA map above).
 - Opportunity drive ground — `models/Mars - Opportunity Yolu.glb`, a terrain sculpted by Team Rosebital (one tile, ~141 × 143 m, 11.5 MB). The game does not load the GLB itself: `tools/bake-terrain.mjs` bakes it into `models/terrain/` (`height.bin` 1 m height grid, `color.png` colours from the model, `terrain.json` size/scale), which is much smaller and also gives the rover its ground height. The outer 8 m of the model is trimmed because its edge is stretched. To rebuild after the model changes: `node tools/bake-terrain.mjs "models/Mars - Opportunity Yolu.glb" models/terrain 8`. The rover is kept inside the terrain (8 m margin), cannot climb slopes steeper than ~32°, and beyond the edge the ground fades into generated hills for the horizon. (The tool also joins multi-tile models, as it did for an earlier "Spirit Yolu" terrain.)
+- Ingenuity helicopter in the flight game — `models/ingenuity_mars_helicopter.glb`, "Ingenuity Mars helicopter" by Cybertron B-127 (https://sketchfab.com/robo-reboot) on Sketchfab, licensed CC BY 4.0: https://sketchfab.com/3d-models/ingenuity-mars-helicopter-0d5bdd6b28bb469ea99cc9a74e06169a
+
+### Ingenuity flight game (flight 72) / Ingenuity uçuş oyunu
+The timeline follows NASA/JPL's account of flight 72 (January 18, 2024); the game runs 1.5× slower than the flight clock shown on screen so there is time to look around.
+- NASA performs first aircraft accident investigation on another world (flight 72: 12 m, about 20 s after takeoff the navigation system could not find enough surface features, descent at 19 s, back on the ground at 32 s, hard impact on a sand ripple, all four blades snapped, contact later restored): https://www.jpl.nasa.gov/news/nasa-performs-first-aircraft-accident-investigation-on-another-world/
+- After three years on Mars, NASA's Ingenuity helicopter mission ends (contact with Perseverance lost about 1 m above the surface; mission end announced January 25, 2024): https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
+- The flight happens in Jezero Crater, but the ground in the game is the same team-made Opportunity terrain (`models/terrain/`), started from a different spot (northwest, facing the middle). The helicopter is shown at its real size (1.21 m rotor span). The spinning of the blades is for show.

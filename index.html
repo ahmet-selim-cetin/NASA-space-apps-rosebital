@@ -52,8 +52,8 @@
     <canvas id="fx-noise" class="fx fx-noise" width="192" height="108"></canvas>
     <div id="fx-black" class="fx-black"></div>
     <div class="hud hud-top">
-      <p class="hud-title">MER-B · OPPORTUNITY</p>
-      <p class="hud-sub"><span data-i18n="drive.location"></span> · SOL <span id="h-sol">5100</span></p>
+      <p class="hud-title" id="h-title">MER-B · OPPORTUNITY</p>
+      <p class="hud-sub"><span id="h-location" data-i18n="drive.location"></span><span id="h-sol-wrap"> · SOL <span id="h-sol">5100</span></span></p>
     </div>
     <div class="drive-actions">
       <button class="btn btn-hud" id="d-sound" aria-label="Sound"><span id="d-sound-icon">🔊</span></button>
@@ -77,6 +77,18 @@
       <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="h-heading">000° N</b></span></div>
       <div class="gauge"><span class="g-label" data-i18n="drive.trip"></span><span class="g-value"><b id="h-trip">0.0</b> m</span></div>
     </div>
+    <!-- Ingenuity flight telemetry (shown instead of the rover's while flying) -->
+    <div class="hud hud-telemetry hud-flight" id="f-telemetry">
+      <div class="gauge wide">
+        <span class="g-label" data-i18n="fly.nav"></span>
+        <span class="g-value"><b id="f-nav">100</b> %</span>
+        <span class="g-bar"><i id="f-nav-bar"></i></span>
+      </div>
+      <div class="gauge"><span class="g-label" data-i18n="fly.clock"></span><span class="g-value"><b id="f-clock">0.0</b> s</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="fly.alt"></span><span class="g-value"><b id="f-alt">0.0</b> m</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="fly.speed"></span><span class="g-value"><b id="f-speed">0.0</b> m/s</span></div>
+      <div class="gauge"><span class="g-label" data-i18n="drive.heading"></span><span class="g-value"><b id="f-heading">000° N</b></span></div>
+    </div>
     <ol id="d-log" class="hud drive-log"></ol>
     <p class="drive-help hidden" id="drive-help" data-i18n="drive.help"></p>
     <div class="touch-pad" aria-hidden="true">
@@ -86,24 +98,28 @@
         <button data-axis="fwd" data-v="-1">▼</button>
       </div>
       <button data-axis="turn" data-v="-1">▶</button>
+      <div class="touch-col flight-only">
+        <button data-axis="alt" data-v="1">⤒</button>
+        <button data-axis="alt" data-v="-1">⤓</button>
+      </div>
     </div>
   </div>
   <!-- Ending -->
   <section id="ending" class="ending" aria-hidden="true">
     <img class="ending-logo" src="assets/rosebital-pill.svg" width="101" height="34" alt="Rosebital" />
     <div class="ending-inner">
-      <p class="eyebrow" data-i18n="end.kicker"></p>
-      <h2 data-i18n="end.title"></h2>
-      <p class="ending-body" data-i18n="end.body"></p>
+      <p class="eyebrow" id="e-kicker" data-i18n="end.kicker"></p>
+      <h2 id="e-title" data-i18n="end.title"></h2>
+      <p class="ending-body" id="e-body" data-i18n="end.body"></p>
       <dl class="ending-stats">
-        <div><dt data-i18n="panel.planned"></dt><dd>90 <span data-i18n="panel.sols"></span></dd></div>
-        <div><dt data-i18n="panel.lasted"></dt><dd><span data-i18n="end.sols"></span> <span data-i18n="panel.sols"></span></dd></div>
-        <div><dt data-i18n="panel.distance"></dt><dd><span data-i18n="end.km"></span> km</dd></div>
+        <div><dt data-i18n="panel.planned"></dt><dd id="e-planned">90 <span data-i18n="panel.sols"></span></dd></div>
+        <div><dt data-i18n="panel.lasted"></dt><dd id="e-lasted"><span data-i18n="end.sols"></span> <span data-i18n="panel.sols"></span></dd></div>
+        <div><dt data-i18n="panel.distance"></dt><dd id="e-distance"><span data-i18n="end.km"></span> km</dd></div>
       </dl>
-      <p class="ending-closing" data-i18n="end.closing"></p>
+      <p class="ending-closing" id="e-closing" data-i18n="end.closing"></p>
       <div class="ending-actions">
         <button class="btn btn-primary" id="e-back"><span data-i18n="panel.back"></span></button>
-        <button class="btn btn-ghost" id="e-again"><span data-i18n="end.again"></span></button>
+        <button class="btn btn-ghost" id="e-again"><span id="e-again-label" data-i18n="end.again"></span></button>
       </div>
     </div>
   </section>
