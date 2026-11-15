@@ -32,6 +32,9 @@ body.exploring .label-layer { opacity: 1; }
 .brand em { color: var(--accent); }
 .brand { opacity: 0; transition: opacity 1.2s; }
 body.exploring .brand { opacity: 1; }
+.brand { cursor: pointer; pointer-events: none; transition: opacity 1.2s, filter .2s; }
+body.exploring .brand { pointer-events: auto; }
+.brand:hover, .brand:focus-visible { filter: brightness(1.25); outline: none; }
 .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 10px; box-shadow: 0 0 12px var(--accent); }
 .lang-switch { display: flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--glass); backdrop-filter: blur(8px); }
 .lang-switch button { background: none; border: 0; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); cursor: pointer; }

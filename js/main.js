@@ -65,6 +65,27 @@ async function setWorld(next) {
 document.querySelectorAll('[data-world]').forEach((b) => b.addEventListener('click', () => setWorld(b.dataset.world)));
 markWorld();
 
+// The title at the top left leads back to the home page (the start menu).
+const brand = $('brand');
+async function goHome() {
+  if (drive.running || !document.body.classList.contains('exploring')) return;
+  if (slidesOpen()) { slidesEl.classList.remove('open'); slidesEl.setAttribute('aria-hidden', 'true'); }
+  selected = null;
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
+  globe.setSelected(null);
+  $('hint').classList.add('hidden');
+  document.body.classList.remove('exploring');
+  $('intro').classList.remove('gone');
+  if (world !== 'mars') await setWorld('mars'); // "Explore Mars" always starts on Mars
+  else globe.flyHome();
+}
+brand.addEventListener('click', goHome);
+brand.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goHome(); } });
+const markBrand = () => { brand.title = t('brand.home'); brand.setAttribute('aria-label', t('brand.home')); };
+markBrand();
+onLangChange(markBrand);
+
 // ---------- Panel ----------
 const fmtDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(getLang() === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 const fmtNum = (n) => n.toLocaleString(getLang() === 'tr' ? 'tr-TR' : 'en-US');
